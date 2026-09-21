@@ -52,7 +52,9 @@ Widget _buildAppWithFlavorBanner(BuildContext context) {
     getPages: AppPages.routes,
     debugShowCheckedModeBanner: false,
     initialBinding: SplashBinding(),
-    theme: ThemeData(fontFamily: 'Poppins'),
+    theme: ThemeData(
+        fontFamily: 'Poppins',
+        scaffoldBackgroundColor: const Color.fromARGB(221, 21, 20, 20)),
   );
 
   // NOTE: Hide Banner in PROD flavor
