@@ -1,0 +1,10 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "pre-dev",
+            "type": "shell",
+            "command": "flutter clean && flutter pub get"
+        }
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "greeting": "Halo Dunia!",
+    "name": "Namaku {}. Aku tinggal di {}",
+    "film": "Film favoritku adalah {title} dengan genre {genre}",
+    "characters": {
+        "male": "Actor yang baik",
+        "female": "Actress yang cantik"
+    }
+}

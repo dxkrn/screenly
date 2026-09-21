@@ -1,0 +1,9 @@
+{
+    "greeting": "Hello World!",
+    "name": "My name is {}. I live in {}",
+    "film": "My favourite film is {title} with genre {genre}",
+    "characters": {
+        "male": "Good Actor",
+        "female": "Pretty Actress"
+    }
+}

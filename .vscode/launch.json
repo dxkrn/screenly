@@ -1,0 +1,44 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Flavor (DEV)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "preLaunchTask": "pre-dev"
+        },
+        {
+            "name": "Flavor (STAGING)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_staging.dart",
+            "preLaunchTask": "pre-dev"
+        },
+        {
+            "name": "Flavor (PROD)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prod.dart",
+            "preLaunchTask": "pre-dev"
+        },
+        {
+            "name": "Flavor Direct (DEV)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+        },
+        {
+            "name": "Flavor Direct (STAGING)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_staging.dart",
+        },
+        {
+            "name": "Flavor Direct (PROD)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prod.dart",
+        }
+    ]
+}
