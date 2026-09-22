@@ -2,14 +2,7 @@
 
 import 'package:get/get.dart';
 
-class HomeController extends GetxController {
-  var isLoading = false.obs;
-  final selectedIndex = 0.obs;
-
-  void changeTabIndex(int index) {
-    selectedIndex.value = index;
-  }
-
+class DiscoverController extends GetxController {
   @override
   void onInit() {
     super.onInit();

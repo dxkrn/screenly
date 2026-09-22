@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 
+import '../modules/discover/bindings/discover_binding.dart';
+import '../modules/discover/views/discover_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/movie/bindings/movie_binding.dart';
 import '../modules/movie/views/movie_view.dart';
+import '../modules/profile/bindings/profile_binding.dart';
+import '../modules/profile/views/profile_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 import '../modules/tvshow/bindings/tvshow_binding.dart';
 import '../modules/tvshow/views/tvshow_view.dart';
+import '../modules/watchlist/bindings/watchlist_binding.dart';
+import '../modules/watchlist/views/watchlist_view.dart';
 
 // ignore_for_file: constant_identifier_names
 
@@ -50,6 +56,21 @@ class AppPages {
       name: _Paths.TVSHOW,
       page: () => const TvshowView(),
       binding: TvshowBinding(),
+    ),
+    GetPage(
+      name: _Paths.PROFILE,
+      page: () => const ProfileView(),
+      binding: ProfileBinding(),
+    ),
+    GetPage(
+      name: _Paths.WATCHLIST,
+      page: () => const WatchlistView(),
+      binding: WatchlistBinding(),
+    ),
+    GetPage(
+      name: _Paths.DISCOVER,
+      page: () => const DiscoverView(),
+      binding: DiscoverBinding(),
     ),
   ];
 }

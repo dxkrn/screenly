@@ -10,9 +10,9 @@ class ThemeConfig {
   // Define all themes here
   static final Map<AppTheme, ThemeColors> themes = {
     AppTheme.light: ThemeColors(
-      primary: const Color(0xffFFD771),
-      primaryDark: const Color(0xffEBBD47),
-      primaryLight: const Color(0xffFAEED1),
+      primary: const Color(0xffDBFF07),
+      primaryDark: const Color(0xffC5E600),
+      primaryLight: const Color(0xffECFFA1),
       secondary: const Color(0xff4484FF),
       secondaryDark: const Color(0xff477EEB),
       secondaryLight: const Color(0xffD1DFFA),
@@ -26,9 +26,9 @@ class ThemeConfig {
       black: const Color.fromARGB(255, 0, 0, 0),
     ),
     AppTheme.dark: ThemeColors(
-      primary: const Color(0xffE57373),
-      primaryDark: const Color(0xffD32F2F),
-      primaryLight: const Color(0xffFFCDD2),
+      primary: const Color(0xffDBFF07),
+      primaryDark: const Color(0xffC5E600),
+      primaryLight: const Color(0xffECFFA1),
       secondary: const Color(0xff64B5F6),
       secondaryDark: const Color(0xff1976D2),
       secondaryLight: const Color(0xffBBDEFB),
