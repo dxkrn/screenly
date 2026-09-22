@@ -9,27 +9,32 @@ class HomeBottomNavBar extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 16,
-            color: Colors.black.withValues(alpha: 0.3),
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
+    return SafeArea(
+      top: false,
+      bottom: false,
+      child: Container(
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(color: Colors.white10),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 16,
+              color: Colors.black.withValues(alpha: 0.4),
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Obx(
             () => GNav(
               gap: 8,
               mainAxisAlignment: MainAxisAlignment.center,
               activeColor: primaryColor,
-              iconSize: 24,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              iconSize: 22,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               duration: const Duration(milliseconds: 300),
               tabBackgroundColor: primaryColor.withValues(alpha: 0.15),
               color: Colors.grey,

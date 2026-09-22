@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:screenly/app/data/models/search_multi_model.dart';
 import 'package:screenly/app/modules/movie/views/components/movie_card.dart';
 import 'package:screenly/app/modules/tvshow/views/components/tvshow_card.dart';
 import 'package:screenly/app/routes/app_pages.dart';
@@ -166,49 +165,6 @@ class DiscoverView extends StatelessWidget {
     );
   }
 
-  Widget _buildNonMovieCard(
-    SearchResultModel item,
-    double cardWidth,
-    double cardHeight,
-  ) {
-    return GestureDetector(
-      onTap: () => Get.toNamed(
-        Routes.DETAILS,
-        arguments: {'id': item.id, 'type': item.mediaType ?? 'tv'},
-      ),
-      child: SizedBox(
-        width: cardWidth,
-        child: Column(
-          spacing: 8,
-          children: [
-            Container(
-              width: cardWidth,
-              height: cardHeight,
-              decoration: BoxDecoration(
-                color: Colors.black45,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.white10),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Center(
-                child: Text(
-                  item.displayTitle,
-                  textAlign: TextAlign.center,
-                  style: paragraphSmallTextStyle.copyWith(
-                    color: whiteColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildLoadingSkeleton() {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -278,10 +234,17 @@ class DiscoverView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.search_rounded,
-              color: Colors.white24,
-              size: 56,
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: primaryColor.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.search_rounded,
+                size: 48,
+                color: primaryColor,
+              ),
             ),
             const SizedBox(height: 12),
             Text(
@@ -303,10 +266,17 @@ class DiscoverView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.search_off_rounded,
-            color: Colors.white24,
-            size: 56,
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: primaryColor.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.search_off_rounded,
+              size: 48,
+              color: primaryColor,
+            ),
           ),
           const SizedBox(height: 12),
           Text(
