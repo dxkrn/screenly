@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:screenly/app/data/models/search_multi_model.dart';
+import 'package:screenly/app/data/models/tvshow_on_the_air_model.dart';
 import 'package:screenly/app/modules/discover/controllers/discover_controller.dart';
 import 'package:screenly/app/modules/discover/views/discover_view.dart';
 import 'package:screenly/app/modules/movie/views/components/movie_card.dart';
@@ -132,5 +133,32 @@ void main() {
     );
 
     expect(find.text('Jenna Ortega'), findsOneWidget);
+  });
+
+  test('TvShowOnTheAirModel parses json and computes getters correctly', () {
+    final json = {
+      'id': 202250,
+      'name': 'Dirty Linen',
+      'original_name': 'Dirty Linen',
+      'first_air_date': '2023-01-23',
+      'poster_path': '/mAJ84W6I8I272Da87qplS2Dp9ST.jpg',
+      'backdrop_path': '/mAJ84W6I8I272Da87qplS2Dp9ST.jpg',
+      'vote_average': 7.64,
+      'vote_count': 14,
+      'overview': 'To exact vengeance...',
+      'popularity': 123.45,
+    };
+
+    final tvShow = TvShowOnTheAirModel.fromJson(json);
+
+    expect(tvShow.id, 202250);
+    expect(tvShow.name, 'Dirty Linen');
+    expect(tvShow.title, 'Dirty Linen');
+    expect(tvShow.releaseYear, '2023');
+    expect(tvShow.formattedRating, '7.6');
+    expect(tvShow.fullPosterUrl,
+        'https://image.tmdb.org/t/p/w500/mAJ84W6I8I272Da87qplS2Dp9ST.jpg');
+    expect(tvShow.fullBackdropUrl,
+        'https://image.tmdb.org/t/p/w780/mAJ84W6I8I272Da87qplS2Dp9ST.jpg');
   });
 }
