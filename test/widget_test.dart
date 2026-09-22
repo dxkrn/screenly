@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive/hive.dart';
 import 'package:screenly/app/data/models/media_detail_model.dart';
 import 'package:screenly/app/data/models/search_multi_model.dart';
 import 'package:screenly/app/data/models/tvshow_airing_today_model.dart';
@@ -15,8 +18,16 @@ import 'package:screenly/app/modules/discover/views/discover_view.dart';
 import 'package:screenly/app/modules/movie/views/components/movie_card.dart';
 import 'package:screenly/app/modules/movie/views/components/populer_people_card.dart';
 import 'package:screenly/app/modules/tvshow/views/components/tvshow_card.dart';
+import 'package:screenly/app/modules/watchlist/controllers/watchlist_controller.dart';
+import 'package:screenly/app/modules/watchlist/views/watchlist_view.dart';
+import 'package:screenly/utils/preferences_utils.dart';
 
 void main() {
+  setUpAll(() {
+    final tempDir = Directory.systemTemp.createTempSync('screenly_test_');
+    Hive.init(tempDir.path);
+  });
+
   setUp(() {
     Get.reset();
   });
@@ -394,5 +405,123 @@ void main() {
     expect(find.text('Drama'), findsOneWidget);
     expect(find.text('Storyline'), findsOneWidget);
     expect(find.text('A ticking-time-bomb insomniac...'), findsOneWidget);
+    expect(find.byIcon(Icons.arrow_back_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.bookmark_outline_rounded), findsOneWidget);
+  });
+
+  test('PreferencesUtils bookmarks adds, checks, and removes IDs properly',
+      () async {
+    const testId = 999999;
+    expect(await PreferencesUtils.isBookmarked(testId), isFalse);
+
+    final added = await PreferencesUtils.toggleBookmark(testId);
+    expect(added, isTrue);
+    expect(await PreferencesUtils.isBookmarked(testId), isTrue);
+    expect((await PreferencesUtils.getBookmarkIds()).contains(testId), isTrue);
+
+    final removed = await PreferencesUtils.toggleBookmark(testId);
+    expect(removed, isFalse);
+    expect(await PreferencesUtils.isBookmarked(testId), isFalse);
+  });
+
+  testWidgets(
+      'DetailsView renders filled bookmark icon when item was already bookmarked',
+      (tester) async {
+    const testMovieId = 550;
+    await PreferencesUtils.addBookmark(testMovieId);
+
+    final controller = Get.put(DetailsController());
+    controller.isLoading.value = false;
+    controller.errorMessage.value = '';
+    controller.mediaId.value = testMovieId;
+    await controller.checkBookmarkStatus();
+    controller.detail.value = MediaDetailModel(
+      id: testMovieId,
+      mediaType: 'movie',
+      title: 'Fight Club',
+      tagline: 'Mischief. Mayhem. Soap.',
+      overview: 'A ticking-time-bomb insomniac...',
+      releaseDate: '1999-10-15',
+      runtime: 139,
+      voteAverage: 8.4,
+      voteCount: 32000,
+      status: 'Released',
+      genres: [GenreModel(id: 18, name: 'Drama')],
+    );
+
+    await tester.pumpWidget(
+      ScreenUtilInit(
+        designSize: const Size(375, 812),
+        builder: (context, child) => const GetMaterialApp(
+          home: DetailsView(),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.byIcon(Icons.bookmark_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.bookmark_outline_rounded), findsNothing);
+
+    // Clean up
+    await PreferencesUtils.removeBookmark(testMovieId);
+  });
+
+  testWidgets('WatchlistView renders empty state when no bookmarks exist',
+      (tester) async {
+    Get.put(WatchlistController());
+
+    await tester.pumpWidget(
+      ScreenUtilInit(
+        designSize: const Size(375, 812),
+        builder: (context, child) => const GetMaterialApp(
+          home: WatchlistView(),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('Watchlist'), findsOneWidget);
+    expect(
+      find.text('Your collection of saved movies and TV shows to watch'),
+      findsOneWidget,
+    );
+    expect(find.text('Your Watchlist is Empty'), findsOneWidget);
+    expect(find.text('Explore Movies'), findsOneWidget);
+  });
+
+  testWidgets('WatchlistView renders bookmarked items from local storage',
+      (tester) async {
+    const testMovieId = 8888;
+    await PreferencesUtils.addBookmark(testMovieId, {
+      'id': testMovieId,
+      'title': 'Interstellar',
+      'poster_path': '/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
+      'media_type': 'movie',
+      'vote_average': 8.7,
+      'vote_count': 35000,
+    });
+
+    final controller = Get.put(WatchlistController());
+    await controller.loadBookmarks();
+
+    await tester.pumpWidget(
+      ScreenUtilInit(
+        designSize: const Size(375, 812),
+        builder: (context, child) => const GetMaterialApp(
+          home: WatchlistView(),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('Interstellar'), findsOneWidget);
+    expect(find.text('All (1)'), findsOneWidget);
+    expect(find.text('Movies (1)'), findsOneWidget);
+
+    // Clean up
+    await PreferencesUtils.removeBookmark(testMovieId);
   });
 }

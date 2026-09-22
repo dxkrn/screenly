@@ -235,27 +235,36 @@ class DiscoverView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              width: 88,
+              height: 88,
               decoration: BoxDecoration(
-                color: primaryColor.withValues(alpha: 0.1),
+                color: const Color(0xFF1E1E1E),
                 shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.1),
+                ),
               ),
-              child: Icon(
-                Icons.search_rounded,
-                size: 48,
-                color: primaryColor,
+              child: const Center(
+                child: Icon(
+                  Icons.search_rounded,
+                  color: Colors.white38,
+                  size: 42,
+                ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
             Text(
               'Search movies & TV shows',
-              style: heading6TextStyle.copyWith(color: Colors.white70),
+              style: heading5TextStyle.copyWith(color: whiteColor),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               'Type a title and press search on your keyboard',
               textAlign: TextAlign.center,
-              style: paragraphSmallTextStyle.copyWith(color: Colors.white38),
+              style: paragraphSmallTextStyle.copyWith(
+                color: Colors.white54,
+                height: 1.5,
+              ),
             ),
           ],
         ),
@@ -267,28 +276,36 @@ class DiscoverView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(20),
+            width: 88,
+            height: 88,
             decoration: BoxDecoration(
-              color: primaryColor.withValues(alpha: 0.1),
+              color: const Color(0xFF1E1E1E),
               shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.1),
+              ),
             ),
-            child: Icon(
-              Icons.search_off_rounded,
-              size: 48,
-              color: primaryColor,
+            child: const Center(
+              child: Icon(
+                Icons.search_off_rounded,
+                color: Colors.white38,
+                size: 42,
+              ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 20),
           Text(
             'No results found for "${controller.lastSearchedQuery.value}"',
-            textAlign: TextAlign.center,
-            style: paragraphSmallTextStyle.copyWith(color: Colors.white70),
+            style: heading5TextStyle.copyWith(color: whiteColor),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             'Try checking your spelling or use different keywords',
             textAlign: TextAlign.center,
-            style: paragraphSmallTextStyle.copyWith(color: Colors.white38),
+            style: paragraphSmallTextStyle.copyWith(
+              color: Colors.white54,
+              height: 1.5,
+            ),
           ),
         ],
       ),

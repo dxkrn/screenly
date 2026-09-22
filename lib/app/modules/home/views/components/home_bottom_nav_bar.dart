@@ -15,9 +15,9 @@ class HomeBottomNavBar extends GetView<HomeController> {
       child: Container(
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E1E1E),
+          // color: const Color(0xFF1E1E1E),
           borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: Colors.white10),
+          // border: Border.all(color: Colors.white10),
           boxShadow: [
             BoxShadow(
               blurRadius: 16,

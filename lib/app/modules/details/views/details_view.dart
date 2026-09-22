@@ -33,10 +33,11 @@ class DetailsView extends GetView<DetailsController> {
   Widget _buildLoadingView() {
     return Stack(
       children: [
-        Positioned(
-          top: 48,
-          left: 16,
-          child: _buildBackButton(),
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: _buildActionButtons(),
+          ),
         ),
         Center(
           child: CircularProgressIndicator(
@@ -51,10 +52,11 @@ class DetailsView extends GetView<DetailsController> {
   Widget _buildErrorView() {
     return Stack(
       children: [
-        Positioned(
-          top: 48,
-          left: 16,
-          child: _buildBackButton(),
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: _buildActionButtons(),
+          ),
         ),
         Center(
           child: Padding(
@@ -109,22 +111,83 @@ class DetailsView extends GetView<DetailsController> {
     );
   }
 
-  Widget _buildBackButton() {
-    return Material(
-      color: Colors.black.withValues(alpha: 0.5),
-      shape: const CircleBorder(),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () => Get.back(),
-        child: const Padding(
-          padding: EdgeInsets.all(10),
-          child: Icon(
-            Icons.arrow_back_rounded,
-            color: Colors.white,
-            size: 22,
-          ),
+  Widget _buildCircleButton({
+    required Widget icon,
+    required VoidCallback onTap,
+    Color? borderColor,
+    Color? backgroundColor,
+  }) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: backgroundColor ?? Colors.black.withValues(alpha: 0.5),
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: borderColor ?? Colors.white.withValues(alpha: 0.15),
+          width: 1,
         ),
       ),
+      child: Material(
+        color: Colors.transparent,
+        shape: const CircleBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Center(child: icon),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBackButton() {
+    return _buildCircleButton(
+      icon: const Icon(
+        Icons.arrow_back_rounded,
+        color: Colors.white,
+        size: 20,
+      ),
+      onTap: () => Get.back(),
+    );
+  }
+
+  Widget _buildBookmarkButton() {
+    return Obx(() {
+      final isBookmarked = controller.isBookmarked.value;
+      return _buildCircleButton(
+        borderColor: isBookmarked
+            ? primaryColor.withValues(alpha: 0.6)
+            : Colors.white.withValues(alpha: 0.15),
+        backgroundColor: isBookmarked
+            ? primaryColor.withValues(alpha: 0.15)
+            : Colors.black.withValues(alpha: 0.5),
+        icon: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          transitionBuilder: (child, animation) => ScaleTransition(
+            scale: animation,
+            child: child,
+          ),
+          child: Icon(
+            isBookmarked
+                ? Icons.bookmark_rounded
+                : Icons.bookmark_outline_rounded,
+            key: ValueKey<bool>(isBookmarked),
+            color: isBookmarked ? primaryColor : Colors.white,
+            size: 20,
+          ),
+        ),
+        onTap: () => controller.toggleBookmark(),
+      );
+    });
+  }
+
+  Widget _buildActionButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildBackButton(),
+        _buildBookmarkButton(),
+      ],
     );
   }
 
@@ -137,10 +200,21 @@ class DetailsView extends GetView<DetailsController> {
           pinned: true,
           elevation: 0,
           backgroundColor: const Color(0xFF141414),
+          leadingWidth: 56,
           leading: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _buildBackButton(),
+            padding: const EdgeInsets.only(left: 16),
+            child: Center(
+              child: _buildBackButton(),
+            ),
           ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Center(
+                child: _buildBookmarkButton(),
+              ),
+            ),
+          ],
           flexibleSpace: FlexibleSpaceBar(
             background: Stack(
               fit: StackFit.expand,
