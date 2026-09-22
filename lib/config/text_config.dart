@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:screenly/config/theme_config.dart';
 
 class TextConfig {
@@ -7,64 +6,55 @@ class TextConfig {
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w800,
     color: fontSecondaryColor,
-    fontSize: 40.sp,
-    height: 0.9,
+    fontSize: 40,
   );
   static TextStyle heading2TextStyle = TextStyle(
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w800,
     color: fontSecondaryColor,
-    fontSize: 36.sp,
-    height: 0.9,
+    fontSize: 36,
   );
   static TextStyle heading3TextStyle = TextStyle(
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w700,
     color: fontSecondaryColor,
-    fontSize: 32.sp,
-    height: 0.9,
+    fontSize: 32,
   );
   static TextStyle heading4TextStyle = TextStyle(
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w700,
     color: fontSecondaryColor,
-    fontSize: 24.sp,
-    height: 0.9,
+    fontSize: 24,
   );
   static TextStyle heading5TextStyle = TextStyle(
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w600,
     color: fontSecondaryColor,
-    fontSize: 20.sp,
-    height: 0.9,
+    fontSize: 20,
   );
   static TextStyle heading6TextStyle = TextStyle(
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w600,
     color: fontSecondaryColor,
-    fontSize: 16.sp,
-    height: 0.9,
+    fontSize: 16,
   );
   static TextStyle paragraphLargeTextStyle = TextStyle(
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w400,
     color: fontSecondaryColor,
-    fontSize: 20.sp,
-    height: 0.9,
+    fontSize: 20,
   );
   static TextStyle paragraphRegulerTextStyle = TextStyle(
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w400,
     color: fontSecondaryColor,
-    fontSize: 16.sp,
-    height: 0.9,
+    fontSize: 16,
   );
   static TextStyle paragraphSmallTextStyle = TextStyle(
     fontFamily: 'Poppins',
     fontWeight: FontWeight.w400,
     color: fontSecondaryColor,
-    fontSize: 14.sp,
-    height: 0.9,
+    fontSize: 14,
   );
 }
 
