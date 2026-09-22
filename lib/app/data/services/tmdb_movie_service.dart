@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:screenly/app/data/models/movie_now_playing_model.dart';
+import 'package:screenly/app/data/models/movie_popular_model.dart';
 import 'package:screenly/app/data/models/movie_top_rated_model.dart';
 import 'package:screenly/app/data/models/movie_upcoming_model.dart';
 import 'package:screenly/config/api_config.dart';
@@ -94,6 +95,28 @@ class TmdbService {
     } else {
       throw Exception(
         'Failed to load top rated movies (Status: ${response.statusCode})',
+      );
+    }
+  }
+
+  // NOTE: get popular movies
+  Future<MoviePopularResponseModel> getPopularMovies({int page = 1}) async {
+    final uri = Uri.parse(
+      '${ApiConfig.tmdbBaseUrl}/movie/popular?language=en-US&page=$page',
+    );
+
+    final response = await _client.get(
+      uri,
+      headers: ApiConfig.tmdbHeaders,
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data =
+          json.decode(response.body) as Map<String, dynamic>;
+      return MoviePopularResponseModel.fromJson(data);
+    } else {
+      throw Exception(
+        'Failed to load popular movies (Status: ${response.statusCode})',
       );
     }
   }

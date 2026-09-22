@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:screenly/app/modules/movie/controllers/movie_controller.dart';
 import 'package:screenly/config/text_config.dart';
@@ -101,7 +100,7 @@ class UpcomingSection extends StatelessWidget {
               'Failed to load upcoming movies',
               style: paragraphSmallTextStyle.copyWith(
                 color: whiteColor,
-                fontSize: 13.sp,
+                fontSize: 13,
               ),
             ),
             const SizedBox(height: 12),
@@ -116,7 +115,7 @@ class UpcomingSection extends StatelessWidget {
                 'Retry',
                 style: heading6TextStyle.copyWith(
                   color: Colors.black,
-                  fontSize: 13.sp,
+                  fontSize: 13,
                 ),
               ),
             ),
