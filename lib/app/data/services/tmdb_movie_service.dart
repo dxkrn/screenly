@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:screenly/app/data/models/movie_now_playing_model.dart';
+import 'package:screenly/app/data/models/movie_upcoming_model.dart';
 import 'package:screenly/config/api_config.dart';
 
 class TmdbService {
@@ -48,6 +49,28 @@ class TmdbService {
     } else {
       throw Exception(
         'Failed to load movie detail for ID: $movieId (Status: ${response.statusCode})',
+      );
+    }
+  }
+
+  // NOTE: get upcoming movies
+  Future<MovieUpcomingResponseModel> getUpcomingMovies({int page = 1}) async {
+    final uri = Uri.parse(
+      '${ApiConfig.tmdbBaseUrl}/movie/upcoming?language=en-US&page=$page',
+    );
+
+    final response = await _client.get(
+      uri,
+      headers: ApiConfig.tmdbHeaders,
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data =
+          json.decode(response.body) as Map<String, dynamic>;
+      return MovieUpcomingResponseModel.fromJson(data);
+    } else {
+      throw Exception(
+        'Failed to load upcoming movies (Status: ${response.statusCode})',
       );
     }
   }
