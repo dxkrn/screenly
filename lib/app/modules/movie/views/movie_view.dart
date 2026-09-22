@@ -11,6 +11,7 @@ class MovieView extends GetView<MovieController> {
     return Scaffold(
       body: SafeArea(
           child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(vertical: 16),
         child: Column(
           children: [
             NowPlayingSection(),

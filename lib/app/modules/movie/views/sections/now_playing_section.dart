@@ -1,22 +1,20 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:screenly/app/modules/movie/controllers/movie_controller.dart';
 import 'package:screenly/config/text_config.dart';
 import 'package:screenly/config/theme_config.dart';
 
 class NowPlayingSection extends StatelessWidget {
-  const NowPlayingSection({
-    super.key,
-  });
+  const NowPlayingSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final colors = [
-      Colors.amber,
-      Colors.blueAccent,
-      Colors.deepOrangeAccent,
-      Colors.teal,
-      Colors.purpleAccent,
-    ];
+    final MovieController controller = Get.isRegistered<MovieController>()
+        ? Get.find<MovieController>()
+        : Get.put(MovieController());
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,44 +27,271 @@ class NowPlayingSection extends StatelessWidget {
             style: heading4TextStyle.copyWith(color: whiteColor),
           ),
         ),
-        FlutterCarousel(
-          options: FlutterCarouselOptions(
-            height: 440,
-            showIndicator: true,
-            enlargeCenterPage: true,
-            enlargeStrategy: CenterPageEnlargeStrategy.height,
-            enlargeFactor: 128 / 440,
-            viewportFraction: 0.9,
-            enableInfiniteScroll: true,
-            autoPlay: true,
-            autoPlayInterval: const Duration(seconds: 3),
-            autoPlayAnimationDuration: const Duration(milliseconds: 800),
-            autoPlayCurve: Curves.fastOutSlowIn,
-            slideIndicator: CircularSlideIndicator(
-              slideIndicatorOptions: SlideIndicatorOptions(
-                indicatorRadius: 4,
-                itemSpacing: 12,
-                currentIndicatorColor: whiteColor,
-                indicatorBackgroundColor: Colors.grey.withValues(alpha: 0.5),
+        Obx(() {
+          if (controller.isLoadingNowPlaying.value) {
+            return _buildLoadingState();
+          }
+
+          if (controller.errorMessage.isNotEmpty &&
+              controller.nowPlayingMovies.isEmpty) {
+            return _buildErrorState(controller);
+          }
+
+          return FlutterCarousel(
+            options: FlutterCarouselOptions(
+              height: 440,
+              showIndicator: true,
+              enlargeCenterPage: true,
+              enlargeStrategy: CenterPageEnlargeStrategy.height,
+              enlargeFactor: 96 / 440,
+              viewportFraction: 0.85,
+              enableInfiniteScroll: true,
+              autoPlay: true,
+              autoPlayInterval: const Duration(seconds: 4),
+              autoPlayAnimationDuration: const Duration(milliseconds: 800),
+              autoPlayCurve: Curves.fastOutSlowIn,
+              slideIndicator: CircularSlideIndicator(
+                slideIndicatorOptions: SlideIndicatorOptions(
+                  indicatorRadius: 4,
+                  itemSpacing: 12,
+                  currentIndicatorColor: primaryColor,
+                  indicatorBackgroundColor: Colors.grey.withValues(alpha: 0.5),
+                ),
               ),
             ),
-          ),
-          items: colors.map((color) {
-            return Builder(
-              builder: (BuildContext context) {
-                return Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.symmetric(horizontal: 6),
-                  decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                );
-              },
-            );
-          }).toList(),
-        ),
+            items: controller.nowPlayingMovies.map((movie) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.symmetric(horizontal: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF242424),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.35),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        // NOTE: Poster Image
+                        if (movie.fullPosterUrl.isNotEmpty)
+                          CachedNetworkImage(
+                            imageUrl: movie.fullPosterUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: const Color(0xFF1E1E1E),
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: primaryColor,
+                                ),
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: const Color(0xFF1E1E1E),
+                              child: const Icon(
+                                Icons.movie_outlined,
+                                color: Colors.white38,
+                                size: 48,
+                              ),
+                            ),
+                          )
+                        else
+                          Container(
+                            color: const Color(0xFF1E1E1E),
+                            child: const Icon(
+                              Icons.movie_outlined,
+                              color: Colors.white38,
+                              size: 48,
+                            ),
+                          ),
+
+                        // NOTE: Gradient Shadow at bottom
+                        Positioned.fill(
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  Colors.transparent,
+                                  Colors.black.withValues(alpha: 0.3),
+                                  Colors.black.withValues(alpha: 0.9),
+                                ],
+                                stops: const [0.0, 0.45, 0.7, 1.0],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        // NOTE: Movie Info
+                        Positioned(
+                          left: 16,
+                          right: 16,
+                          bottom: 24,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                movie.title,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: heading5TextStyle.copyWith(
+                                  color: whiteColor,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 18.sp,
+                                  height: 1.2,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.star_rounded,
+                                    color: primaryColor,
+                                    size: 18.sp,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    movie.formattedRating,
+                                    style: heading6TextStyle.copyWith(
+                                      color: whiteColor,
+                                      fontSize: 13.sp,
+                                    ),
+                                  ),
+                                  if (movie.releaseYear.isNotEmpty) ...[
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      '•',
+                                      style: paragraphSmallTextStyle.copyWith(
+                                        color: Colors.white54,
+                                        fontSize: 12.sp,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      movie.releaseYear,
+                                      style: paragraphSmallTextStyle.copyWith(
+                                        color: Colors.white70,
+                                        fontSize: 13.sp,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            }).toList(),
+          );
+        }),
       ],
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return FlutterCarousel(
+      options: FlutterCarouselOptions(
+        height: 440,
+        showIndicator: true,
+        enlargeCenterPage: true,
+        enlargeStrategy: CenterPageEnlargeStrategy.height,
+        enlargeFactor: 80 / 440,
+        viewportFraction: 0.85,
+        enableInfiniteScroll: true,
+        autoPlay: false,
+        slideIndicator: CircularSlideIndicator(
+          slideIndicatorOptions: SlideIndicatorOptions(
+            indicatorRadius: 4,
+            itemSpacing: 12,
+            currentIndicatorColor: primaryColor,
+            indicatorBackgroundColor: Colors.grey.withValues(alpha: 0.5),
+          ),
+        ),
+      ),
+      items: List.generate(3, (index) {
+        return Builder(
+          builder: (BuildContext context) {
+            return Container(
+              width: double.infinity,
+              margin: const EdgeInsets.symmetric(horizontal: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF242424),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: primaryColor,
+                ),
+              ),
+            );
+          },
+        );
+      }),
+    );
+  }
+
+  Widget _buildErrorState(MovieController controller) {
+    return Container(
+      width: double.infinity,
+      height: 360,
+      margin: const EdgeInsets.symmetric(horizontal: 24),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E1E),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white10),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.cloud_off_rounded,
+              color: Colors.white38,
+              size: 48,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Failed to load movies',
+              style: paragraphSmallTextStyle.copyWith(
+                color: whiteColor,
+                fontSize: 14.sp,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                foregroundColor: Colors.black,
+              ),
+              onPressed: () => controller.fetchNowPlayingMovies(),
+              icon: const Icon(Icons.refresh_rounded, size: 18),
+              label: Text(
+                'Retry',
+                style: heading6TextStyle.copyWith(
+                  color: Colors.black,
+                  fontSize: 14.sp,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
