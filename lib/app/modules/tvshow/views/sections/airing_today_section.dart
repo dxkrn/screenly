@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:screenly/app/components/section_title.dart';
 import 'package:screenly/app/modules/tvshow/controllers/tvshow_controller.dart';
 import 'package:screenly/app/routes/app_pages.dart';
 import 'package:screenly/app/modules/tvshow/views/components/tvshow_card.dart';
@@ -19,11 +20,15 @@ class AiringTodaySection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 16,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'Airing Today Shows',
-            style: heading4TextStyle.copyWith(color: whiteColor),
+        SectionTitle(
+          title: 'Airing Today Shows',
+          ontap: () => Get.toNamed(
+            Routes.DISCOVER,
+            arguments: {
+              'title': 'Airing Today Shows',
+              'subtitle': 'Explore TV shows airing today',
+              'categoryType': 'tv_airing_today',
+            },
           ),
         ),
         Obx(() {

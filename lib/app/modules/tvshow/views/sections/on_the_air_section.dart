@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:screenly/app/components/section_title.dart';
 import 'package:screenly/app/modules/tvshow/controllers/tvshow_controller.dart';
 import 'package:screenly/app/routes/app_pages.dart';
 import 'package:screenly/config/text_config.dart';
@@ -21,11 +22,16 @@ class OnTheAirSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 16,
       children: [
-        Padding(
+        SectionTitle(
+          title: 'On The Air',
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Text(
-            'On The Air',
-            style: heading4TextStyle.copyWith(color: whiteColor),
+          ontap: () => Get.toNamed(
+            Routes.DISCOVER,
+            arguments: {
+              'title': 'On The Air',
+              'subtitle': 'Explore TV shows currently on the air',
+              'categoryType': 'tv_on_the_air',
+            },
           ),
         ),
         Obx(() {

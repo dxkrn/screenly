@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:screenly/app/components/section_title.dart';
 import 'package:screenly/app/modules/tvshow/controllers/tvshow_controller.dart';
 import 'package:screenly/app/routes/app_pages.dart';
 import 'package:screenly/app/modules/tvshow/views/components/tvshow_card.dart';
@@ -20,11 +21,15 @@ class TopRatedSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 16,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'Top Rated Shows',
-            style: heading4TextStyle.copyWith(color: whiteColor),
+        SectionTitle(
+          title: 'Top Rated Shows',
+          ontap: () => Get.toNamed(
+            Routes.DISCOVER,
+            arguments: {
+              'title': 'Top Rated Shows',
+              'subtitle': 'Explore the highest rated TV shows',
+              'categoryType': 'tv_top_rated',
+            },
           ),
         ),
         Obx(() {
