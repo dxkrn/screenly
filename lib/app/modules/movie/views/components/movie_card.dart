@@ -106,7 +106,7 @@ class MovieCard extends StatelessWidget {
                   ],
                 )),
             Text(
-              title ?? 'title',
+              title ?? '',
               textAlign: TextAlign.center,
               style: paragraphSmallTextStyle.copyWith(color: whiteColor),
               maxLines: 1,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:screenly/app/data/models/media_detail_model.dart';
 import 'package:screenly/app/data/models/movie_now_playing_model.dart';
 import 'package:screenly/app/data/models/movie_popular_model.dart';
 import 'package:screenly/app/data/models/movie_top_rated_model.dart';
@@ -36,7 +37,7 @@ class TmdbService {
   }
 
   // NOTE: get detail movie
-  Future<MovieNowPlayingModel> getMovieDetail(int movieId) async {
+  Future<MediaDetailModel> getMovieDetail(int movieId) async {
     final uri = Uri.parse(
       '${ApiConfig.tmdbBaseUrl}/movie/$movieId?language=en-US',
     );
@@ -49,7 +50,7 @@ class TmdbService {
     if (response.statusCode == 200) {
       final Map<String, dynamic> data =
           json.decode(response.body) as Map<String, dynamic>;
-      return MovieNowPlayingModel.fromJson(data);
+      return MediaDetailModel.fromMovieJson(data);
     } else {
       throw Exception(
         'Failed to load movie detail for ID: $movieId (Status: ${response.statusCode})',

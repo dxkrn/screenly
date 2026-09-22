@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:screenly/app/data/models/media_detail_model.dart';
 import 'package:screenly/app/data/models/tvshow_airing_today_model.dart';
 import 'package:screenly/app/data/models/tvshow_on_the_air_model.dart';
 import 'package:screenly/app/data/models/tvshow_popular_model.dart';
@@ -96,6 +97,28 @@ class TmdbTvShowService {
     } else {
       throw Exception(
         'Failed to load top rated TV shows (Status: ${response.statusCode})',
+      );
+    }
+  }
+
+  // NOTE: get detail tv show
+  Future<MediaDetailModel> getTvShowDetail(int tvId) async {
+    final uri = Uri.parse(
+      '${ApiConfig.tmdbBaseUrl}/tv/$tvId?language=en-US',
+    );
+
+    final response = await _client.get(
+      uri,
+      headers: ApiConfig.tmdbHeaders,
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data =
+          json.decode(response.body) as Map<String, dynamic>;
+      return MediaDetailModel.fromTvJson(data);
+    } else {
+      throw Exception(
+        'Failed to load TV show detail for ID: $tvId (Status: ${response.statusCode})',
       );
     }
   }

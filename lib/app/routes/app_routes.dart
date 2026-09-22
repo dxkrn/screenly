@@ -12,6 +12,7 @@ abstract class Routes {
   static const PROFILE = _Paths.PROFILE;
   static const WATCHLIST = _Paths.WATCHLIST;
   static const DISCOVER = _Paths.DISCOVER;
+  static const DETAILS = _Paths.DETAILS;
 }
 
 abstract class _Paths {
@@ -23,4 +24,5 @@ abstract class _Paths {
   static const PROFILE = '/profile';
   static const WATCHLIST = '/watchlist';
   static const DISCOVER = '/discover';
+  static const DETAILS = '/details';
 }

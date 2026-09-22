@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:screenly/app/modules/tvshow/controllers/tvshow_controller.dart';
+import 'package:screenly/app/routes/app_pages.dart';
 import 'package:screenly/app/modules/tvshow/views/components/tvshow_card.dart';
 import 'package:screenly/config/text_config.dart';
 import 'package:screenly/config/theme_config.dart';
@@ -48,9 +49,10 @@ class AiringTodaySection extends StatelessWidget {
                     posterUrl: tvShow.fullPosterUrl,
                     voteAvg: tvShow.voteAverage,
                     voteCount: tvShow.voteCount,
-                    onTap: () {
-                      // Note: detail action
-                    },
+                    onTap: () => Get.toNamed(
+                      Routes.DETAILS,
+                      arguments: {'id': tvShow.id, 'type': 'tv'},
+                    ),
                   );
                 }).toList(),
               ),

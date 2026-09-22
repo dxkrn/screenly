@@ -4,6 +4,7 @@ import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:screenly/app/modules/movie/controllers/movie_controller.dart';
+import 'package:screenly/app/routes/app_pages.dart';
 import 'package:screenly/config/text_config.dart';
 import 'package:screenly/config/theme_config.dart';
 
@@ -62,136 +63,142 @@ class NowPlayingSection extends StatelessWidget {
             items: controller.nowPlayingMovies.map((movie) {
               return Builder(
                 builder: (BuildContext context) {
-                  return Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.symmetric(horizontal: 6),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF242424),
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.35),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+                  return GestureDetector(
+                    onTap: () => Get.toNamed(
+                      Routes.DETAILS,
+                      arguments: {'id': movie.id, 'type': 'movie'},
                     ),
-                    clipBehavior: Clip.antiAlias,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        // NOTE: Poster Image
-                        if (movie.fullPosterUrl.isNotEmpty)
-                          CachedNetworkImage(
-                            imageUrl: movie.fullPosterUrl,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              color: const Color(0xFF1E1E1E),
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: primaryColor,
+                    child: Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.symmetric(horizontal: 6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF242424),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.35),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          // NOTE: Poster Image
+                          if (movie.fullPosterUrl.isNotEmpty)
+                            CachedNetworkImage(
+                              imageUrl: movie.fullPosterUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Container(
+                                color: const Color(0xFF1E1E1E),
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: primaryColor,
+                                  ),
                                 ),
                               ),
-                            ),
-                            errorWidget: (context, url, error) => Container(
+                              errorWidget: (context, url, error) => Container(
+                                color: const Color(0xFF1E1E1E),
+                                child: const Icon(
+                                  Icons.movie_creation_outlined,
+                                  color: Colors.white38,
+                                  size: 48,
+                                ),
+                              ),
+                            )
+                          else
+                            Container(
                               color: const Color(0xFF1E1E1E),
                               child: const Icon(
-                                Icons.movie_outlined,
+                                Icons.movie_creation_outlined,
                                 color: Colors.white38,
                                 size: 48,
                               ),
                             ),
-                          )
-                        else
-                          Container(
-                            color: const Color(0xFF1E1E1E),
-                            child: const Icon(
-                              Icons.movie_outlined,
-                              color: Colors.white38,
-                              size: 48,
-                            ),
-                          ),
 
-                        // NOTE: Gradient Shadow at bottom
-                        Positioned.fill(
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.transparent,
-                                  Colors.transparent,
-                                  Colors.black.withValues(alpha: 0.3),
-                                  Colors.black.withValues(alpha: 0.9),
-                                ],
-                                stops: const [0.0, 0.45, 0.7, 1.0],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        // NOTE: Movie Info
-                        Positioned(
-                          left: 16,
-                          right: 16,
-                          bottom: 24,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                movie.title,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: heading5TextStyle.copyWith(
-                                  color: whiteColor,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 18.sp,
-                                  height: 1.2,
+                          // NOTE: Gradient Shadow at bottom
+                          Positioned.fill(
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.transparent,
+                                    Colors.transparent,
+                                    Colors.black.withValues(alpha: 0.3),
+                                    Colors.black.withValues(alpha: 0.9),
+                                  ],
+                                  stops: const [0.0, 0.45, 0.7, 1.0],
                                 ),
                               ),
-                              const SizedBox(height: 6),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.star_rounded,
-                                    color: primaryColor,
-                                    size: 18.sp,
+                            ),
+                          ),
+
+                          // NOTE: Movie Info
+                          Positioned(
+                            left: 16,
+                            right: 16,
+                            bottom: 24,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  movie.title,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: heading5TextStyle.copyWith(
+                                    color: whiteColor,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 18.sp,
+                                    height: 1.2,
                                   ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    movie.formattedRating,
-                                    style: heading6TextStyle.copyWith(
-                                      color: whiteColor,
-                                      fontSize: 13.sp,
+                                ),
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.star_rounded,
+                                      color: primaryColor,
+                                      size: 18.sp,
                                     ),
-                                  ),
-                                  if (movie.releaseYear.isNotEmpty) ...[
-                                    const SizedBox(width: 8),
+                                    const SizedBox(width: 4),
                                     Text(
-                                      '•',
-                                      style: paragraphSmallTextStyle.copyWith(
-                                        color: Colors.white54,
-                                        fontSize: 12.sp,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      movie.releaseYear,
-                                      style: paragraphSmallTextStyle.copyWith(
-                                        color: Colors.white70,
+                                      movie.formattedRating,
+                                      style: heading6TextStyle.copyWith(
+                                        color: whiteColor,
                                         fontSize: 13.sp,
                                       ),
                                     ),
+                                    if (movie.releaseYear.isNotEmpty) ...[
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        '•',
+                                        style: paragraphSmallTextStyle.copyWith(
+                                          color: Colors.white54,
+                                          fontSize: 12.sp,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        movie.releaseYear,
+                                        style: paragraphSmallTextStyle.copyWith(
+                                          color: Colors.white70,
+                                          fontSize: 13.sp,
+                                        ),
+                                      ),
+                                    ],
                                   ],
-                                ],
-                              ),
-                            ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },

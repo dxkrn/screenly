@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:screenly/app/data/models/media_detail_model.dart';
 import 'package:screenly/app/data/models/search_multi_model.dart';
 import 'package:screenly/app/data/models/tvshow_airing_today_model.dart';
 import 'package:screenly/app/data/models/tvshow_on_the_air_model.dart';
 import 'package:screenly/app/data/models/tvshow_popular_model.dart';
 import 'package:screenly/app/data/models/tvshow_top_rated_model.dart';
+import 'package:screenly/app/modules/details/controllers/details_controller.dart';
+import 'package:screenly/app/modules/details/views/details_view.dart';
 import 'package:screenly/app/modules/discover/controllers/discover_controller.dart';
 import 'package:screenly/app/modules/discover/views/discover_view.dart';
 import 'package:screenly/app/modules/movie/views/components/movie_card.dart';
@@ -265,5 +269,130 @@ void main() {
         'https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg');
     expect(tvShow.fullBackdropUrl,
         'https://image.tmdb.org/t/p/w780/bsNm9z2TJfe0WO3RedPGWQ8mG1X.jpg');
+  });
+
+  test('MediaDetailModel.fromMovieJson parses fields and getters correctly',
+      () {
+    final json = {
+      'id': 550,
+      'title': 'Fight Club',
+      'tagline': 'Mischief. Mayhem. Soap.',
+      'overview': 'A ticking-time-bomb insomniac...',
+      'poster_path': '/jSziioSwPVrOy9Yow3XhWIBDjq1.jpg',
+      'backdrop_path': '/c6OLXfKAk5BKeR6broC8pYiCquX.jpg',
+      'release_date': '1999-10-15',
+      'runtime': 139,
+      'budget': 63000000,
+      'revenue': 100853753,
+      'vote_average': 8.437,
+      'vote_count': 32897,
+      'genres': [
+        {'id': 18, 'name': 'Drama'},
+        {'id': 53, 'name': 'Thriller'},
+      ],
+      'status': 'Released',
+    };
+
+    final detail = MediaDetailModel.fromMovieJson(json);
+
+    expect(detail.id, 550);
+    expect(detail.isMovie, isTrue);
+    expect(detail.isTv, isFalse);
+    expect(detail.title, 'Fight Club');
+    expect(detail.tagline, 'Mischief. Mayhem. Soap.');
+    expect(detail.releaseYear, '1999');
+    expect(detail.formattedRuntime, '2h 19m');
+    expect(detail.formattedRating, '8.4');
+    expect(detail.formattedBudget, '\$63,000,000');
+    expect(detail.formattedRevenue, '\$100,853,753');
+    expect(detail.genres.length, 2);
+    expect(detail.genres.first.name, 'Drama');
+  });
+
+  test('MediaDetailModel.fromTvJson parses TV fields and getters correctly',
+      () {
+    final json = {
+      'id': 1399,
+      'name': 'Game of Thrones',
+      'tagline': 'Winter Is Coming',
+      'first_air_date': '2011-04-17',
+      'number_of_seasons': 8,
+      'number_of_episodes': 73,
+      'vote_average': 8.438,
+      'vote_count': 21390,
+      'genres': [
+        {'id': 10765, 'name': 'Sci-Fi & Fantasy'},
+        {'id': 18, 'name': 'Drama'},
+      ],
+      'created_by': [
+        {
+          'id': 9813,
+          'name': 'David Benioff',
+          'profile_path': '/xvNN5huL0X8yJ7h3IZfGG4O2zBD.jpg',
+        }
+      ],
+      'seasons': [
+        {
+          'id': 3624,
+          'name': 'Season 1',
+          'episode_count': 10,
+          'season_number': 1,
+          'air_date': '2011-04-17',
+          'vote_average': 8.3,
+        }
+      ],
+      'status': 'Ended',
+    };
+
+    final detail = MediaDetailModel.fromTvJson(json);
+
+    expect(detail.id, 1399);
+    expect(detail.isMovie, isFalse);
+    expect(detail.isTv, isTrue);
+    expect(detail.title, 'Game of Thrones');
+    expect(detail.releaseYear, '2011');
+    expect(detail.seasonsAndEpisodesText, '8 Seasons • 73 Episodes');
+    expect(detail.formattedRating, '8.4');
+    expect(detail.createdBy.length, 1);
+    expect(detail.createdBy.first.name, 'David Benioff');
+    expect(detail.seasons.length, 1);
+    expect(detail.seasons.first.name, 'Season 1');
+    expect(detail.seasons.first.airYear, '2011');
+  });
+
+  testWidgets('DetailsView renders media details when loaded', (tester) async {
+    final controller = Get.put(DetailsController());
+    controller.isLoading.value = false;
+    controller.errorMessage.value = '';
+    controller.detail.value = MediaDetailModel(
+      id: 550,
+      mediaType: 'movie',
+      title: 'Fight Club',
+      tagline: 'Mischief. Mayhem. Soap.',
+      overview: 'A ticking-time-bomb insomniac...',
+      releaseDate: '1999-10-15',
+      runtime: 139,
+      voteAverage: 8.4,
+      voteCount: 32000,
+      status: 'Released',
+      genres: [GenreModel(id: 18, name: 'Drama')],
+    );
+
+    await tester.pumpWidget(
+      ScreenUtilInit(
+        designSize: const Size(375, 812),
+        builder: (context, child) => const GetMaterialApp(
+          home: DetailsView(),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Fight Club'), findsOneWidget);
+    expect(find.text('"Mischief. Mayhem. Soap."'), findsOneWidget);
+    expect(find.text('MOVIE'), findsOneWidget);
+    expect(find.text('Drama'), findsOneWidget);
+    expect(find.text('Storyline'), findsOneWidget);
+    expect(find.text('A ticking-time-bomb insomniac...'), findsOneWidget);
   });
 }

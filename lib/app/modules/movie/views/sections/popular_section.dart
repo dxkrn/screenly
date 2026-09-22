@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:screenly/app/modules/movie/controllers/movie_controller.dart';
+import 'package:screenly/app/routes/app_pages.dart';
 import 'package:screenly/config/text_config.dart';
 import 'package:screenly/config/theme_config.dart';
 import '../components/movie_card.dart';
@@ -48,9 +49,10 @@ class PopularSection extends StatelessWidget {
                     posterUrl: movie.fullPosterUrl,
                     voteAvg: movie.voteAverage,
                     voteCount: movie.voteCount,
-                    onTap: () {
-                      // Note: detail action
-                    },
+                    onTap: () => Get.toNamed(
+                      Routes.DETAILS,
+                      arguments: {'id': movie.id, 'type': 'movie'},
+                    ),
                   );
                 }).toList(),
               ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:screenly/app/data/models/search_multi_model.dart';
 import 'package:screenly/app/modules/movie/views/components/movie_card.dart';
+import 'package:screenly/app/modules/tvshow/views/components/tvshow_card.dart';
+import 'package:screenly/app/routes/app_pages.dart';
 import 'package:screenly/config/text_config.dart';
 import 'package:screenly/config/theme_config.dart';
 import '../controllers/discover_controller.dart';
@@ -138,12 +140,25 @@ class DiscoverView extends StatelessWidget {
                 width: itemWidth,
                 height: itemHeight,
                 showTypeBadge: true,
-                onTap: () {
-                  // Note: detail action
-                },
+                onTap: () => Get.toNamed(
+                  Routes.DETAILS,
+                  arguments: {'id': item.id, 'type': 'movie'},
+                ),
               );
             } else {
-              return _buildNonMovieCard(item, itemWidth, itemHeight);
+              return TvshowCard(
+                title: item.displayTitle,
+                posterUrl: item.fullPosterUrl,
+                voteAvg: item.voteAverage,
+                voteCount: item.voteCount,
+                width: itemWidth,
+                height: itemHeight,
+                showTypeBadge: true,
+                onTap: () => Get.toNamed(
+                  Routes.DETAILS,
+                  arguments: {'id': item.id, 'type': 'tv'},
+                ),
+              );
             }
           },
         );
@@ -156,34 +171,40 @@ class DiscoverView extends StatelessWidget {
     double cardWidth,
     double cardHeight,
   ) {
-    return SizedBox(
-      width: cardWidth,
-      child: Column(
-        spacing: 8,
-        children: [
-          Container(
-            width: cardWidth,
-            height: cardHeight,
-            decoration: BoxDecoration(
-              color: Colors.black45,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Colors.white10),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Center(
-              child: Text(
-                item.displayTitle,
-                textAlign: TextAlign.center,
-                style: paragraphSmallTextStyle.copyWith(
-                  color: whiteColor,
-                  fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: () => Get.toNamed(
+        Routes.DETAILS,
+        arguments: {'id': item.id, 'type': item.mediaType ?? 'tv'},
+      ),
+      child: SizedBox(
+        width: cardWidth,
+        child: Column(
+          spacing: 8,
+          children: [
+            Container(
+              width: cardWidth,
+              height: cardHeight,
+              decoration: BoxDecoration(
+                color: Colors.black45,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: Colors.white10),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Center(
+                child: Text(
+                  item.displayTitle,
+                  textAlign: TextAlign.center,
+                  style: paragraphSmallTextStyle.copyWith(
+                    color: whiteColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

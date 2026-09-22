@@ -25,9 +25,8 @@ class HomeBottomNavBar extends GetView<HomeController> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Obx(
             () => GNav(
-              rippleColor: primaryColor.withValues(alpha: 0.2),
-              hoverColor: primaryColor.withValues(alpha: 0.1),
               gap: 8,
+              mainAxisAlignment: MainAxisAlignment.center,
               activeColor: primaryColor,
               iconSize: 24,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -49,10 +48,10 @@ class HomeBottomNavBar extends GetView<HomeController> {
                   icon: Icons.bookmark_rounded,
                   text: 'WatchList',
                 ),
-                GButton(
-                  icon: Icons.person_rounded,
-                  text: 'Profile',
-                ),
+                // GButton(
+                //   icon: Icons.person_rounded,
+                //   text: 'Profile',
+                // ),
               ],
             ),
           ),
