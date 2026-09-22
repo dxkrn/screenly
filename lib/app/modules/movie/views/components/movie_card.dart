@@ -7,13 +7,25 @@ class MovieCard extends StatelessWidget {
   final String? title;
   final String? posterUrl;
   final VoidCallback? onTap;
+  final num? voteAvg, voteCount;
 
   const MovieCard({
     super.key,
     this.title,
     this.posterUrl,
     this.onTap,
+    this.voteAvg,
+    this.voteCount,
   });
+
+  String _formatVoteCount(num count) {
+    if (count >= 1000000) {
+      return '${(count / 1000000).toStringAsFixed(1)}M';
+    } else if (count >= 1000) {
+      return '${(count / 1000).toStringAsFixed(1)}k';
+    }
+    return count.toString();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +78,37 @@ class MovieCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
+            if (voteAvg != null)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.star_rounded,
+                    color: primaryColor,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    voteAvg!.toStringAsFixed(1),
+                    style: heading6TextStyle.copyWith(
+                      color: whiteColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  if (voteCount != null && voteCount! > 0) ...[
+                    const SizedBox(width: 4),
+                    Text(
+                      '(${_formatVoteCount(voteCount!)})',
+                      style: paragraphSmallTextStyle.copyWith(
+                        color: Colors.white54,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:screenly/app/data/models/movie_now_playing_model.dart';
+import 'package:screenly/app/data/models/movie_top_rated_model.dart';
 import 'package:screenly/app/data/models/movie_upcoming_model.dart';
 import 'package:screenly/app/data/services/tmdb_movie_service.dart';
 
@@ -16,11 +17,17 @@ class MovieController extends GetxController {
   final upcomingMovies = <MovieUpcomingModel>[].obs;
   final upcomingErrorMessage = ''.obs;
 
+  // NOTE: Top Rated state
+  final isLoadingTopRated = true.obs;
+  final topRatedMovies = <MovieTopRatedModel>[].obs;
+  final topRatedErrorMessage = ''.obs;
+
   @override
   void onInit() {
     super.onInit();
     fetchNowPlayingMovies();
     fetchUpcomingMovies();
+    fetchTopRatedMovies();
   }
 
   // NOTE: Fetch now playing movies
@@ -48,6 +55,20 @@ class MovieController extends GetxController {
       upcomingErrorMessage.value = e.toString();
     } finally {
       isLoadingUpcoming.value = false;
+    }
+  }
+
+  // NOTE: Fetch top rated movies
+  Future<void> fetchTopRatedMovies() async {
+    try {
+      isLoadingTopRated.value = true;
+      topRatedErrorMessage.value = '';
+      final response = await _tmdbService.getTopRatedMovies();
+      topRatedMovies.assignAll(response.results);
+    } catch (e) {
+      topRatedErrorMessage.value = e.toString();
+    } finally {
+      isLoadingTopRated.value = false;
     }
   }
 }
