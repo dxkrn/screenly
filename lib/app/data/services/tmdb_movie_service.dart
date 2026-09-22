@@ -4,6 +4,7 @@ import 'package:screenly/app/data/models/movie_now_playing_model.dart';
 import 'package:screenly/app/data/models/movie_popular_model.dart';
 import 'package:screenly/app/data/models/movie_top_rated_model.dart';
 import 'package:screenly/app/data/models/movie_upcoming_model.dart';
+import 'package:screenly/app/data/models/search_multi_model.dart';
 import 'package:screenly/config/api_config.dart';
 
 class TmdbService {
@@ -117,6 +118,33 @@ class TmdbService {
     } else {
       throw Exception(
         'Failed to load popular movies (Status: ${response.statusCode})',
+      );
+    }
+  }
+
+  // NOTE: search multi (movies, tv shows, persons)
+  Future<SearchMultiResponseModel> searchMulti({
+    required String query,
+    int page = 1,
+    bool includeAdult = true,
+  }) async {
+    final encodedQuery = Uri.encodeQueryComponent(query);
+    final uri = Uri.parse(
+      '${ApiConfig.tmdbBaseUrl}/search/multi?query=$encodedQuery&include_adult=$includeAdult&language=en-US&page=$page',
+    );
+
+    final response = await _client.get(
+      uri,
+      headers: ApiConfig.tmdbHeaders,
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data =
+          json.decode(response.body) as Map<String, dynamic>;
+      return SearchMultiResponseModel.fromJson(data);
+    } else {
+      throw Exception(
+        'Failed to search multi (Status: ${response.statusCode})',
       );
     }
   }
