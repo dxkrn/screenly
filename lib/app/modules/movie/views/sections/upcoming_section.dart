@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:screenly/app/components/section_title.dart';
 import 'package:screenly/app/modules/movie/controllers/movie_controller.dart';
 import 'package:screenly/app/routes/app_pages.dart';
 import 'package:screenly/config/text_config.dart';
@@ -19,11 +20,14 @@ class UpcomingSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 16,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'Upcoming Movies',
-            style: heading4TextStyle.copyWith(color: whiteColor),
+        SectionTitle(
+          title: 'Upcoming Movies',
+          ontap: () => Get.toNamed(
+            Routes.DISCOVER,
+            arguments: {
+              'title': 'Upcoming Movies',
+              'categoryType': 'movie_upcoming',
+            },
           ),
         ),
         Obx(() {

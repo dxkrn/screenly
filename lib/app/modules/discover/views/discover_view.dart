@@ -7,60 +7,172 @@ import 'package:screenly/config/text_config.dart';
 import 'package:screenly/config/theme_config.dart';
 import '../controllers/discover_controller.dart';
 
-class DiscoverView extends StatelessWidget {
-  const DiscoverView({super.key});
+class DiscoverView extends StatefulWidget {
+  final String? categoryType;
+  final String? title;
+  final String? subtitle;
+
+  const DiscoverView({
+    super.key,
+    this.categoryType,
+    this.title,
+    this.subtitle,
+  });
+
+  @override
+  State<DiscoverView> createState() => _DiscoverViewState();
+}
+
+class _DiscoverViewState extends State<DiscoverView> {
+  late final DiscoverController controller;
+  late final String? _tag;
+
+  @override
+  void initState() {
+    super.initState();
+    final args = Get.arguments is Map ? (Get.arguments as Map) : null;
+    final cat = widget.categoryType ?? args?['categoryType'] as String?;
+    final title = widget.title ?? args?['title'] as String?;
+    final subtitle = widget.subtitle ?? args?['subtitle'] as String?;
+
+    _tag = cat;
+    if (_tag != null) {
+      controller = Get.isRegistered<DiscoverController>(tag: _tag)
+          ? Get.find<DiscoverController>(tag: _tag)
+          : Get.put(DiscoverController(), tag: _tag);
+
+      if (!controller.isCategoryMode.value ||
+          controller.categoryType.value != _tag) {
+        controller.loadCategory(
+          category: _tag,
+          title: title ?? 'Discover',
+          subtitle: subtitle,
+        );
+      }
+    } else {
+      controller = Get.isRegistered<DiscoverController>()
+          ? Get.find<DiscoverController>()
+          : Get.put(DiscoverController());
+    }
+  }
+
+  @override
+  void dispose() {
+    if (_tag != null && Get.isRegistered<DiscoverController>(tag: _tag)) {
+      Get.delete<DiscoverController>(tag: _tag);
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final DiscoverController controller = Get.isRegistered<DiscoverController>()
-        ? Get.find<DiscoverController>()
-        : Get.put(DiscoverController());
-
-    return SafeArea(
-      bottom: false,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 16,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 4,
-              children: [
-                Text(
-                  'Discover',
-                  style: heading4TextStyle.copyWith(color: whiteColor),
-                ),
-                Text(
-                  'Find and explore your favorite movies and TV shows',
-                  style: paragraphSmallTextStyle.copyWith(
-                    color: Colors.white70,
-                  ),
-                ),
-              ],
-            ),
-            _buildSearchBar(controller),
-            Expanded(
-              child: Obx(() {
-                if (controller.isLoading.value &&
-                    controller.searchResults.isEmpty) {
-                  return _buildLoadingSkeleton();
+    return Scaffold(
+      backgroundColor: const Color(0xFF141414),
+      body: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 12),
+              _buildHeader(context),
+              Obx(() {
+                if (controller.isCategoryMode.value) {
+                  return const SizedBox.shrink();
                 }
-
-                if (controller.errorMessage.isNotEmpty &&
-                    controller.searchResults.isEmpty) {
-                  return _buildErrorState(controller);
-                }
-
-                if (controller.searchResults.isEmpty) {
-                  return _buildEmptyState(controller);
-                }
-
-                return _buildResultsGrid(controller);
+                return Padding(
+                  padding: const EdgeInsets.only(top: 16),
+                  child: _buildSearchBar(controller),
+                );
               }),
+              const SizedBox(height: 16),
+              Expanded(
+                child: Obx(() {
+                  if (controller.isLoading.value &&
+                      controller.searchResults.isEmpty) {
+                    return _buildLoadingSkeleton();
+                  }
+
+                  if (controller.errorMessage.isNotEmpty &&
+                      controller.searchResults.isEmpty) {
+                    return _buildErrorState(controller);
+                  }
+
+                  if (controller.searchResults.isEmpty) {
+                    return _buildEmptyState(controller);
+                  }
+
+                  return _buildResultsGrid(controller);
+                }),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    final showBackButton = _tag != null || controller.isCategoryMode.value;
+
+    return Row(
+      children: [
+        if (showBackButton) ...[
+          _buildBackButton(context),
+          const SizedBox(width: 14),
+        ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 4,
+            children: [
+              Obx(
+                () => Text(
+                  controller.titleText.value,
+                  style: heading5TextStyle.copyWith(color: whiteColor),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBackButton(BuildContext context) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E1E),
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.15),
+          width: 1,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        shape: const CircleBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Get.back();
+            }
+          },
+          child: const Center(
+            child: Icon(
+              Icons.arrow_back_rounded,
+              color: Colors.white,
+              size: 20,
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -143,7 +255,7 @@ class DiscoverView extends StatelessWidget {
                       voteCount: item.voteCount,
                       width: itemWidth,
                       height: itemHeight,
-                      showTypeBadge: true,
+                      showTypeBadge: !controller.isCategoryMode.value,
                       onTap: () => Get.toNamed(
                         Routes.DETAILS,
                         arguments: {'id': item.id, 'type': 'movie'},
@@ -157,7 +269,7 @@ class DiscoverView extends StatelessWidget {
                       voteCount: item.voteCount,
                       width: itemWidth,
                       height: itemHeight,
-                      showTypeBadge: true,
+                      showTypeBadge: !controller.isCategoryMode.value,
                       onTap: () => Get.toNamed(
                         Routes.DETAILS,
                         arguments: {'id': item.id, 'type': 'tv'},
@@ -230,7 +342,9 @@ class DiscoverView extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Failed to search results',
+            controller.isCategoryMode.value
+                ? 'Failed to load ${controller.titleText.value.toLowerCase()}'
+                : 'Failed to search results',
             style: heading6TextStyle.copyWith(color: Colors.white70),
           ),
           const SizedBox(height: 12),
@@ -258,6 +372,48 @@ class DiscoverView extends StatelessWidget {
   }
 
   Widget _buildEmptyState(DiscoverController controller) {
+    if (controller.isCategoryMode.value) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 88,
+              height: 88,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E1E1E),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.1),
+                ),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.movie_filter_rounded,
+                  color: Colors.white38,
+                  size: 42,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'No items found',
+              style: heading5TextStyle.copyWith(color: whiteColor),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Check back later for updates',
+              textAlign: TextAlign.center,
+              style: paragraphSmallTextStyle.copyWith(
+                color: Colors.white54,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     if (!controller.hasSearched.value) {
       return Center(
         child: Column(

@@ -2,16 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:screenly/app/data/models/search_multi_model.dart';
 import 'package:screenly/app/data/services/tmdb_movie_service.dart';
+import 'package:screenly/app/data/services/tmdb_tvshow_service.dart';
 
 class DiscoverController extends GetxController {
-  final TmdbService _tmdbService;
+  final TmdbService _movieService;
+  final TmdbTvShowService _tvShowService;
 
-  DiscoverController({TmdbService? tmdbService})
-      : _tmdbService = tmdbService ?? TmdbService();
+  DiscoverController({
+    TmdbService? movieService,
+    TmdbTvShowService? tvShowService,
+    TmdbService? tmdbService,
+  })  : _movieService = movieService ?? tmdbService ?? TmdbService(),
+        _tvShowService = tvShowService ?? TmdbTvShowService();
 
   late final TextEditingController searchInputController;
   late final ScrollController scrollController;
 
+  // Category navigation mode states
+  final isCategoryMode = false.obs;
+  final categoryType = ''.obs;
+  final titleText = 'Discover'.obs;
+  final subtitleText = 'Find and explore your favorite movies and TV shows'.obs;
+
+  // Search and pagination states
   final searchInputText = ''.obs;
   final lastSearchedQuery = ''.obs;
   final hasSearched = false.obs;
@@ -49,6 +62,213 @@ class DiscoverController extends GetxController {
     }
   }
 
+  /// Initialize and load a category collection (e.g. from UpcomingSection)
+  Future<void> loadCategory({
+    required String category,
+    required String title,
+    String? subtitle,
+  }) async {
+    isCategoryMode.value = true;
+    categoryType.value = category;
+    titleText.value = title;
+    subtitleText.value = subtitle ?? 'Explore $title';
+    hasSearched.value = true;
+    currentPage.value = 1;
+    searchResults.clear();
+    errorMessage.value = '';
+
+    await fetchCategoryData(page: 1);
+  }
+
+  /// Fetch items for the active category with pagination
+  Future<void> fetchCategoryData({int page = 1}) async {
+    try {
+      if (page == 1) {
+        isLoading.value = true;
+      } else {
+        isLoadingMore.value = true;
+      }
+      errorMessage.value = '';
+
+      List<SearchResultModel> items = [];
+      int responseTotalPages = 1;
+
+      switch (categoryType.value) {
+        case 'movie_upcoming':
+          final res = await _movieService.getUpcomingMovies(page: page);
+          responseTotalPages = res.totalPages ?? 1;
+          items = res.results
+              .map(
+                (m) => SearchResultModel(
+                  id: m.id,
+                  title: m.title,
+                  posterPath: m.posterPath,
+                  backdropPath: m.backdropPath,
+                  voteAverage: m.voteAverage,
+                  voteCount: m.voteCount,
+                  releaseDate: m.releaseDate,
+                  mediaType: 'movie',
+                ),
+              )
+              .toList();
+          break;
+
+        case 'movie_now_playing':
+          final res = await _movieService.getNowPlayingMovies(page: page);
+          responseTotalPages = res.totalPages ?? 1;
+          items = res.results
+              .map(
+                (m) => SearchResultModel(
+                  id: m.id,
+                  title: m.title,
+                  posterPath: m.posterPath,
+                  backdropPath: m.backdropPath,
+                  voteAverage: m.voteAverage,
+                  voteCount: m.voteCount,
+                  releaseDate: m.releaseDate,
+                  mediaType: 'movie',
+                ),
+              )
+              .toList();
+          break;
+
+        case 'movie_popular':
+          final res = await _movieService.getPopularMovies(page: page);
+          responseTotalPages = res.totalPages ?? 1;
+          items = res.results
+              .map(
+                (m) => SearchResultModel(
+                  id: m.id,
+                  title: m.title,
+                  posterPath: m.posterPath,
+                  backdropPath: m.backdropPath,
+                  voteAverage: m.voteAverage,
+                  voteCount: m.voteCount,
+                  releaseDate: m.releaseDate,
+                  mediaType: 'movie',
+                ),
+              )
+              .toList();
+          break;
+
+        case 'movie_top_rated':
+          final res = await _movieService.getTopRatedMovies(page: page);
+          responseTotalPages = res.totalPages ?? 1;
+          items = res.results
+              .map(
+                (m) => SearchResultModel(
+                  id: m.id,
+                  title: m.title,
+                  posterPath: m.posterPath,
+                  backdropPath: m.backdropPath,
+                  voteAverage: m.voteAverage,
+                  voteCount: m.voteCount,
+                  releaseDate: m.releaseDate,
+                  mediaType: 'movie',
+                ),
+              )
+              .toList();
+          break;
+
+        case 'tv_popular':
+          final res = await _tvShowService.getPopularTvShows(page: page);
+          responseTotalPages = res.totalPages ?? 1;
+          items = res.results
+              .map(
+                (t) => SearchResultModel(
+                  id: t.id,
+                  title: t.name,
+                  posterPath: t.posterPath,
+                  backdropPath: t.backdropPath,
+                  voteAverage: t.voteAverage,
+                  voteCount: t.voteCount,
+                  releaseDate: t.firstAirDate,
+                  mediaType: 'tv',
+                ),
+              )
+              .toList();
+          break;
+
+        case 'tv_top_rated':
+          final res = await _tvShowService.getTopRatedTvShows(page: page);
+          responseTotalPages = res.totalPages ?? 1;
+          items = res.results
+              .map(
+                (t) => SearchResultModel(
+                  id: t.id,
+                  title: t.name,
+                  posterPath: t.posterPath,
+                  backdropPath: t.backdropPath,
+                  voteAverage: t.voteAverage,
+                  voteCount: t.voteCount,
+                  releaseDate: t.firstAirDate,
+                  mediaType: 'tv',
+                ),
+              )
+              .toList();
+          break;
+
+        case 'tv_on_the_air':
+          final res = await _tvShowService.getOnTheAirTvShows(page: page);
+          responseTotalPages = res.totalPages ?? 1;
+          items = res.results
+              .map(
+                (t) => SearchResultModel(
+                  id: t.id,
+                  title: t.name,
+                  posterPath: t.posterPath,
+                  backdropPath: t.backdropPath,
+                  voteAverage: t.voteAverage,
+                  voteCount: t.voteCount,
+                  releaseDate: t.firstAirDate,
+                  mediaType: 'tv',
+                ),
+              )
+              .toList();
+          break;
+
+        case 'tv_airing_today':
+          final res = await _tvShowService.getAiringTodayTvShows(page: page);
+          responseTotalPages = res.totalPages ?? 1;
+          items = res.results
+              .map(
+                (t) => SearchResultModel(
+                  id: t.id,
+                  title: t.name,
+                  posterPath: t.posterPath,
+                  backdropPath: t.backdropPath,
+                  voteAverage: t.voteAverage,
+                  voteCount: t.voteCount,
+                  releaseDate: t.firstAirDate,
+                  mediaType: 'tv',
+                ),
+              )
+              .toList();
+          break;
+
+        default:
+          throw Exception('Unsupported category: ${categoryType.value}');
+      }
+
+      if (page == 1) {
+        searchResults.assignAll(items);
+      } else {
+        searchResults.addAll(items);
+      }
+
+      currentPage.value = page;
+      totalPages.value = responseTotalPages;
+      hasMoreData.value = currentPage.value < totalPages.value;
+    } catch (e) {
+      if (page == 1) {
+        errorMessage.value = e.toString();
+      }
+    } finally {
+      isLoading.value = false;
+      isLoadingMore.value = false;
+    }
+  }
+
   void onSearchChanged(String value) {
     searchInputText.value = value;
   }
@@ -80,7 +300,7 @@ class DiscoverController extends GetxController {
       hasSearched.value = true;
       currentPage.value = 1;
 
-      final response = await _tmdbService.searchMulti(
+      final response = await _movieService.searchMulti(
         query: trimmedQuery,
         page: 1,
       );
@@ -100,33 +320,40 @@ class DiscoverController extends GetxController {
 
   Future<void> loadMore() async {
     if (isLoading.value || isLoadingMore.value || !hasMoreData.value) return;
-    if (lastSearchedQuery.isEmpty) return;
 
-    try {
-      isLoadingMore.value = true;
-      final nextPage = currentPage.value + 1;
+    if (isCategoryMode.value) {
+      await fetchCategoryData(page: currentPage.value + 1);
+    } else {
+      if (lastSearchedQuery.isEmpty) return;
 
-      final response = await _tmdbService.searchMulti(
-        query: lastSearchedQuery.value,
-        page: nextPage,
-      );
+      try {
+        isLoadingMore.value = true;
+        final nextPage = currentPage.value + 1;
 
-      final filteredResults =
-          response.results.where((item) => item.isMovieOrTv).toList();
-      searchResults.addAll(filteredResults);
+        final response = await _movieService.searchMulti(
+          query: lastSearchedQuery.value,
+          page: nextPage,
+        );
 
-      currentPage.value = nextPage;
-      totalPages.value = response.totalPages ?? currentPage.value;
-      hasMoreData.value = currentPage.value < totalPages.value;
-    } catch (_) {
-      // Don't overwrite existing results on page pagination failure
-    } finally {
-      isLoadingMore.value = false;
+        final filteredResults =
+            response.results.where((item) => item.isMovieOrTv).toList();
+        searchResults.addAll(filteredResults);
+
+        currentPage.value = nextPage;
+        totalPages.value = response.totalPages ?? currentPage.value;
+        hasMoreData.value = currentPage.value < totalPages.value;
+      } catch (_) {
+        // Keep current items on pagination network error
+      } finally {
+        isLoadingMore.value = false;
+      }
     }
   }
 
   void retry() {
-    if (lastSearchedQuery.isNotEmpty) {
+    if (isCategoryMode.value) {
+      fetchCategoryData(page: 1);
+    } else if (lastSearchedQuery.isNotEmpty) {
       fetchSearchMulti(lastSearchedQuery.value);
     }
   }
