@@ -3,6 +3,7 @@ import 'package:screenly/app/data/models/movie_now_playing_model.dart';
 import 'package:screenly/app/data/models/movie_popular_model.dart';
 import 'package:screenly/app/data/models/movie_top_rated_model.dart';
 import 'package:screenly/app/data/models/movie_upcoming_model.dart';
+import 'package:screenly/app/data/models/person_popular_model.dart';
 import 'package:screenly/app/data/services/tmdb_movie_service.dart';
 
 class MovieController extends GetxController {
@@ -28,6 +29,11 @@ class MovieController extends GetxController {
   final popularMovies = <MoviePopularModel>[].obs;
   final popularErrorMessage = ''.obs;
 
+  // NOTE: Popular People state
+  final isLoadingPopularPeople = true.obs;
+  final popularPeople = <PersonPopularModel>[].obs;
+  final popularPeopleErrorMessage = ''.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -35,6 +41,7 @@ class MovieController extends GetxController {
     fetchUpcomingMovies();
     fetchTopRatedMovies();
     fetchPopularMovies();
+    fetchPopularPeople();
   }
 
   // NOTE: Fetch now playing movies
@@ -90,6 +97,20 @@ class MovieController extends GetxController {
       popularErrorMessage.value = e.toString();
     } finally {
       isLoadingPopular.value = false;
+    }
+  }
+
+  // NOTE: Fetch popular people
+  Future<void> fetchPopularPeople() async {
+    try {
+      isLoadingPopularPeople.value = true;
+      popularPeopleErrorMessage.value = '';
+      final response = await _tmdbService.getPopularPeople();
+      popularPeople.assignAll(response.results);
+    } catch (e) {
+      popularPeopleErrorMessage.value = e.toString();
+    } finally {
+      isLoadingPopularPeople.value = false;
     }
   }
 }

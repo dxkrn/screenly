@@ -5,6 +5,7 @@ import 'package:screenly/app/data/models/search_multi_model.dart';
 import 'package:screenly/app/modules/discover/controllers/discover_controller.dart';
 import 'package:screenly/app/modules/discover/views/discover_view.dart';
 import 'package:screenly/app/modules/movie/views/components/movie_card.dart';
+import 'package:screenly/app/modules/movie/views/components/populer_people_card.dart';
 
 void main() {
   setUp(() {
@@ -117,5 +118,19 @@ void main() {
     expect(find.textContaining('No results found'), findsNothing);
     // Should show initial prompt
     expect(find.text('Search movies & TV shows'), findsOneWidget);
+  });
+
+  testWidgets('PopularPeopleCard renders name correctly', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: PopularPeopleCard(
+            name: 'Jenna Ortega',
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Jenna Ortega'), findsOneWidget);
   });
 }

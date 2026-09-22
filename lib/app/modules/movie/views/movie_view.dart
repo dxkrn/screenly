@@ -4,6 +4,7 @@ import 'package:screenly/app/modules/movie/views/sections/now_playing_section.da
 import 'package:screenly/app/modules/movie/views/sections/popular_section.dart';
 import 'package:screenly/app/modules/movie/views/sections/top_rated_section.dart';
 import '../controllers/movie_controller.dart';
+import 'sections/popular_people_section.dart';
 import 'sections/upcoming_section.dart';
 
 class MovieView extends GetView<MovieController> {
@@ -22,6 +23,7 @@ class MovieView extends GetView<MovieController> {
             UpcomingSection(),
             TopRatedSection(),
             PopularSection(),
+            PopularPeopleSection(),
           ],
         ),
       )),
