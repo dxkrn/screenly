@@ -119,47 +119,76 @@ class DiscoverView extends StatelessWidget {
         final itemWidth = (constraints.maxWidth - 16) / 2;
         final itemHeight = itemWidth * (4 / 3);
 
-        return GridView.builder(
-          padding: const EdgeInsets.only(bottom: 24),
-          itemCount: controller.searchResults.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: itemWidth / (itemHeight + 64),
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
+        return CustomScrollView(
+          controller: controller.scrollController,
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
           ),
-          itemBuilder: (context, index) {
-            final item = controller.searchResults[index];
-            if (item.isMovie) {
-              return MovieCard(
-                title: item.displayTitle,
-                posterUrl: item.fullPosterUrl,
-                voteAvg: item.voteAverage,
-                voteCount: item.voteCount,
-                width: itemWidth,
-                height: itemHeight,
-                showTypeBadge: true,
-                onTap: () => Get.toNamed(
-                  Routes.DETAILS,
-                  arguments: {'id': item.id, 'type': 'movie'},
-                ),
-              );
-            } else {
-              return TvshowCard(
-                title: item.displayTitle,
-                posterUrl: item.fullPosterUrl,
-                voteAvg: item.voteAverage,
-                voteCount: item.voteCount,
-                width: itemWidth,
-                height: itemHeight,
-                showTypeBadge: true,
-                onTap: () => Get.toNamed(
-                  Routes.DETAILS,
-                  arguments: {'id': item.id, 'type': 'tv'},
-                ),
-              );
-            }
-          },
+          slivers: [
+            SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: itemWidth / (itemHeight + 64),
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final item = controller.searchResults[index];
+                  if (item.isMovie) {
+                    return MovieCard(
+                      title: item.displayTitle,
+                      posterUrl: item.fullPosterUrl,
+                      voteAvg: item.voteAverage,
+                      voteCount: item.voteCount,
+                      width: itemWidth,
+                      height: itemHeight,
+                      showTypeBadge: true,
+                      onTap: () => Get.toNamed(
+                        Routes.DETAILS,
+                        arguments: {'id': item.id, 'type': 'movie'},
+                      ),
+                    );
+                  } else {
+                    return TvshowCard(
+                      title: item.displayTitle,
+                      posterUrl: item.fullPosterUrl,
+                      voteAvg: item.voteAverage,
+                      voteCount: item.voteCount,
+                      width: itemWidth,
+                      height: itemHeight,
+                      showTypeBadge: true,
+                      onTap: () => Get.toNamed(
+                        Routes.DETAILS,
+                        arguments: {'id': item.id, 'type': 'tv'},
+                      ),
+                    );
+                  }
+                },
+                childCount: controller.searchResults.length,
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Obx(() {
+                if (controller.isLoadingMore.value) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: Center(
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: primaryColor,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                return const SizedBox(height: 24);
+              }),
+            ),
+          ],
         );
       },
     );
