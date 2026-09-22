@@ -6,8 +6,16 @@ import 'package:screenly/app/modules/home/controllers/home_controller.dart';
 import 'package:screenly/utils/preferences_utils.dart';
 
 class WatchlistController extends GetxController {
-  final TmdbService _movieService = TmdbService();
-  final TmdbTvShowService _tvShowService = TmdbTvShowService();
+  final TmdbService _movieService;
+  final TmdbTvShowService _tvShowService;
+  final bool autoLoad;
+
+  WatchlistController({
+    TmdbService? movieService,
+    TmdbTvShowService? tvShowService,
+    this.autoLoad = true,
+  })  : _movieService = movieService ?? TmdbService(),
+        _tvShowService = tvShowService ?? TmdbTvShowService();
 
   final isLoading = true.obs;
   final watchlistItems = <SearchResultModel>[].obs;
@@ -32,7 +40,9 @@ class WatchlistController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadBookmarks();
+    if (autoLoad) {
+      loadBookmarks();
+    }
     if (Get.isRegistered<HomeController>()) {
       ever(Get.find<HomeController>().selectedIndex, (index) {
         if (index == 2) {

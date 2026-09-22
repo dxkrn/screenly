@@ -53,10 +53,10 @@ class HomeBottomNavBar extends GetView<HomeController> {
                   icon: Icons.bookmark_rounded,
                   text: 'WatchList',
                 ),
-                // GButton(
-                //   icon: Icons.person_rounded,
-                //   text: 'Profile',
-                // ),
+                GButton(
+                  icon: Icons.person_rounded,
+                  text: 'Profile',
+                ),
               ],
             ),
           ),

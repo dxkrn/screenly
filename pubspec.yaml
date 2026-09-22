@@ -3,7 +3,7 @@ version: 1.0.0+1
 publish_to: none
 description: A flutter getx project starter by dxkrn
 environment:
-  sdk: '>=3.5.3 <=4.0.0'
+  sdk: ">=3.5.3 <=4.0.0"
 
 dependencies:
   cached_network_image: ^3.4.1
@@ -22,6 +22,8 @@ dependencies:
   lottie: ^3.3.2
   path_provider: ^2.1.5
   skeletonizer: ^2.1.1
+  url_launcher: ^6.3.1
+  app_links: ^6.3.2
 
 dev_dependencies:
   change_app_package_name: ^1.5.0

@@ -8,6 +8,9 @@ class PreferencesUtils {
   static const HIVE_AUTH = "UserAuth";
   static const HIVE_BOOKMARKS = "Bookmarks";
   static const HIVE_BOOKMARK_ITEMS = "BookmarkItems";
+  static const HIVE_TMDB_SESSION_ID = "TmdbSessionId";
+  static const HIVE_TMDB_ACCOUNT_ID = "TmdbAccountId";
+  static const HIVE_TMDB_USER = "TmdbUser";
 
   // Note: User Data
   static Future<void> addTheme(String data) async {
@@ -34,6 +37,52 @@ class PreferencesUtils {
   static Future<void> deleteUser() async {
     var box = await Hive.openBox(HIVE_BOX);
     return box.delete(HIVE_AUTH);
+  }
+
+  // Note: TMDB Auth
+  static Future<void> saveTmdbSession({
+    required String sessionId,
+    required int accountId,
+    required Map<String, dynamic> user,
+  }) async {
+    var box = await Hive.openBox(HIVE_BOX);
+    await box.put(HIVE_TMDB_SESSION_ID, sessionId);
+    await box.put(HIVE_TMDB_ACCOUNT_ID, accountId);
+    await box.put(HIVE_TMDB_USER, user);
+  }
+
+  static Future<String?> getTmdbSessionId() async {
+    var box = await Hive.openBox(HIVE_BOX);
+    return box.get(HIVE_TMDB_SESSION_ID) as String?;
+  }
+
+  static Future<int?> getTmdbAccountId() async {
+    var box = await Hive.openBox(HIVE_BOX);
+    final id = box.get(HIVE_TMDB_ACCOUNT_ID);
+    if (id is int) return id;
+    if (id != null) return int.tryParse(id.toString());
+    return null;
+  }
+
+  static Future<Map<String, dynamic>?> getTmdbUser() async {
+    var box = await Hive.openBox(HIVE_BOX);
+    final raw = box.get(HIVE_TMDB_USER);
+    if (raw is Map) {
+      return Map<String, dynamic>.from(raw);
+    }
+    return null;
+  }
+
+  static Future<bool> isTmdbLoggedIn() async {
+    final sessionId = await getTmdbSessionId();
+    return sessionId != null && sessionId.isNotEmpty;
+  }
+
+  static Future<void> clearTmdbSession() async {
+    var box = await Hive.openBox(HIVE_BOX);
+    await box.delete(HIVE_TMDB_SESSION_ID);
+    await box.delete(HIVE_TMDB_ACCOUNT_ID);
+    await box.delete(HIVE_TMDB_USER);
   }
 
   // Note: Bookmarks

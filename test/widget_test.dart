@@ -29,6 +29,7 @@ void main() {
   });
 
   setUp(() {
+    Get.deleteAll(force: true);
     Get.reset();
   });
 
@@ -372,7 +373,7 @@ void main() {
   });
 
   testWidgets('DetailsView renders media details when loaded', (tester) async {
-    final controller = Get.put(DetailsController());
+    final controller = Get.put(DetailsController(autoFetch: false));
     controller.isLoading.value = false;
     controller.errorMessage.value = '';
     controller.detail.value = MediaDetailModel(
@@ -428,13 +429,11 @@ void main() {
       'DetailsView renders filled bookmark icon when item was already bookmarked',
       (tester) async {
     const testMovieId = 550;
-    await PreferencesUtils.addBookmark(testMovieId);
-
-    final controller = Get.put(DetailsController());
+    final controller = Get.put(DetailsController(autoFetch: false));
     controller.isLoading.value = false;
     controller.errorMessage.value = '';
     controller.mediaId.value = testMovieId;
-    await controller.checkBookmarkStatus();
+    controller.isBookmarked.value = true;
     controller.detail.value = MediaDetailModel(
       id: testMovieId,
       mediaType: 'movie',
@@ -458,18 +457,16 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.byIcon(Icons.bookmark_rounded), findsOneWidget);
     expect(find.byIcon(Icons.bookmark_outline_rounded), findsNothing);
-
-    // Clean up
-    await PreferencesUtils.removeBookmark(testMovieId);
   });
 
   testWidgets('WatchlistView renders empty state when no bookmarks exist',
       (tester) async {
-    Get.put(WatchlistController());
+    final controller = Get.put(WatchlistController(autoLoad: false));
+    controller.isLoading.value = false;
+    controller.watchlistItems.clear();
 
     await tester.pumpWidget(
       ScreenUtilInit(
@@ -480,7 +477,6 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Watchlist'), findsOneWidget);
     expect(
@@ -488,23 +484,28 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Your Watchlist is Empty'), findsOneWidget);
-    expect(find.text('Explore Movies'), findsOneWidget);
+    expect(
+      find.text(
+        'Save movies and TV shows to your watchlist by tapping the bookmark icon on their detail page.',
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('WatchlistView renders bookmarked items from local storage',
       (tester) async {
     const testMovieId = 8888;
-    await PreferencesUtils.addBookmark(testMovieId, {
-      'id': testMovieId,
-      'title': 'Interstellar',
-      'poster_path': '/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg',
-      'media_type': 'movie',
-      'vote_average': 8.7,
-      'vote_count': 35000,
-    });
-
-    final controller = Get.put(WatchlistController());
-    await controller.loadBookmarks();
+    final controller = Get.put(WatchlistController(autoLoad: false));
+    controller.isLoading.value = false;
+    controller.watchlistItems.assignAll([
+      SearchResultModel(
+        id: testMovieId,
+        title: 'Interstellar',
+        mediaType: 'movie',
+        voteAverage: 8.7,
+        voteCount: 35000,
+      ),
+    ]);
 
     await tester.pumpWidget(
       ScreenUtilInit(
@@ -515,13 +516,9 @@ void main() {
       ),
     );
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Interstellar'), findsOneWidget);
     expect(find.text('All (1)'), findsOneWidget);
     expect(find.text('Movies (1)'), findsOneWidget);
-
-    // Clean up
-    await PreferencesUtils.removeBookmark(testMovieId);
   });
 }

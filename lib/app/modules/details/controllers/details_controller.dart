@@ -6,8 +6,16 @@ import 'package:screenly/app/data/services/tmdb_tvshow_service.dart';
 import 'package:screenly/utils/preferences_utils.dart';
 
 class DetailsController extends GetxController {
-  final TmdbService _movieService = TmdbService();
-  final TmdbTvShowService _tvShowService = TmdbTvShowService();
+  final TmdbService _movieService;
+  final TmdbTvShowService _tvShowService;
+  final bool autoFetch;
+
+  DetailsController({
+    TmdbService? movieService,
+    TmdbTvShowService? tvShowService,
+    this.autoFetch = true,
+  })  : _movieService = movieService ?? TmdbService(),
+        _tvShowService = tvShowService ?? TmdbTvShowService();
 
   final isLoading = true.obs;
   final errorMessage = ''.obs;
@@ -22,7 +30,9 @@ class DetailsController extends GetxController {
     super.onInit();
     _parseArguments();
     checkBookmarkStatus();
-    fetchDetails();
+    if (autoFetch) {
+      fetchDetails();
+    }
   }
 
   void _parseArguments() {
