@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../controllers/tvshow_controller.dart';
+import 'sections/airing_today_section.dart';
 import 'sections/on_the_air_section.dart';
 
 class TvshowView extends GetView<TvshowController> {
@@ -14,8 +15,10 @@ class TvshowView extends GetView<TvshowController> {
           child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(vertical: 16),
         child: Column(
+          spacing: 32,
           children: [
             OnTheAirSection(),
+            AiringTodaySection(),
           ],
         ),
       )),

@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:screenly/app/data/models/search_multi_model.dart';
+import 'package:screenly/app/data/models/tvshow_airing_today_model.dart';
 import 'package:screenly/app/data/models/tvshow_on_the_air_model.dart';
 import 'package:screenly/app/modules/discover/controllers/discover_controller.dart';
 import 'package:screenly/app/modules/discover/views/discover_view.dart';
 import 'package:screenly/app/modules/movie/views/components/movie_card.dart';
 import 'package:screenly/app/modules/movie/views/components/populer_people_card.dart';
+import 'package:screenly/app/modules/tvshow/views/components/tvshow_card.dart';
 
 void main() {
   setUp(() {
@@ -158,6 +160,53 @@ void main() {
     expect(tvShow.formattedRating, '7.6');
     expect(tvShow.fullPosterUrl,
         'https://image.tmdb.org/t/p/w500/mAJ84W6I8I272Da87qplS2Dp9ST.jpg');
+    expect(tvShow.fullBackdropUrl,
+        'https://image.tmdb.org/t/p/w780/mAJ84W6I8I272Da87qplS2Dp9ST.jpg');
+  });
+
+  testWidgets('TvshowCard renders title and vote average when provided',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: TvshowCard(
+            title: 'Dirty Linen',
+            voteAvg: 5.0,
+            voteCount: 13,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Dirty Linen'), findsOneWidget);
+    expect(find.byIcon(Icons.star_rounded), findsOneWidget);
+    expect(find.text('5.0'), findsOneWidget);
+    expect(find.text('(13)'), findsOneWidget);
+  });
+
+  test('TvShowAiringTodayModel parses json and computes getters correctly', () {
+    final json = {
+      'id': 202250,
+      'name': 'Dirty Linen',
+      'original_name': 'Dirty Linen',
+      'first_air_date': '2023-01-23',
+      'poster_path': '/aoAZgnmMzY9vVy9VWnO3U5PZENh.jpg',
+      'backdrop_path': '/mAJ84W6I8I272Da87qplS2Dp9ST.jpg',
+      'vote_average': 5.0,
+      'vote_count': 13,
+      'overview': 'To exact vengeance...',
+      'popularity': 2797.914,
+    };
+
+    final tvShow = TvShowAiringTodayModel.fromJson(json);
+
+    expect(tvShow.id, 202250);
+    expect(tvShow.name, 'Dirty Linen');
+    expect(tvShow.title, 'Dirty Linen');
+    expect(tvShow.releaseYear, '2023');
+    expect(tvShow.formattedRating, '5.0');
+    expect(tvShow.fullPosterUrl,
+        'https://image.tmdb.org/t/p/w500/aoAZgnmMzY9vVy9VWnO3U5PZENh.jpg');
     expect(tvShow.fullBackdropUrl,
         'https://image.tmdb.org/t/p/w780/mAJ84W6I8I272Da87qplS2Dp9ST.jpg');
   });
