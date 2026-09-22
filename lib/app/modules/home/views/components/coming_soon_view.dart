@@ -21,15 +21,21 @@ class ComingSoonView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              width: 88,
+              height: 88,
               decoration: BoxDecoration(
-                color: primaryColor.withValues(alpha: 0.1),
+                color: const Color(0xFF1E1E1E),
                 shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.1),
+                ),
               ),
-              child: Icon(
-                Icons.access_time_rounded,
-                size: 48.sp,
-                color: primaryColor,
+              child: const Center(
+                child: Icon(
+                  Icons.access_time_rounded,
+                  color: Colors.white38,
+                  size: 42,
+                ),
               ),
             ),
             8.height,
