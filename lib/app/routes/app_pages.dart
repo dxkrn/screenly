@@ -53,31 +53,61 @@ class AppPages {
       name: _Paths.MOVIE,
       page: () => const MovieView(),
       binding: MovieBinding(),
+      transition: Transition.fadeIn,
+      curve: Curves.fastOutSlowIn,
+      transitionDuration: const Duration(
+        milliseconds: 500,
+      ),
     ),
     GetPage(
       name: _Paths.TVSHOW,
       page: () => const TvshowView(),
       binding: TvshowBinding(),
+      transition: Transition.fadeIn,
+      curve: Curves.fastOutSlowIn,
+      transitionDuration: const Duration(
+        milliseconds: 500,
+      ),
     ),
     GetPage(
       name: _Paths.PROFILE,
       page: () => const ProfileView(),
       binding: ProfileBinding(),
+      transition: Transition.fadeIn,
+      curve: Curves.fastOutSlowIn,
+      transitionDuration: const Duration(
+        milliseconds: 500,
+      ),
     ),
     GetPage(
       name: _Paths.WATCHLIST,
       page: () => const WatchlistView(),
       binding: WatchlistBinding(),
+      transition: Transition.fadeIn,
+      curve: Curves.fastOutSlowIn,
+      transitionDuration: const Duration(
+        milliseconds: 500,
+      ),
     ),
     GetPage(
       name: _Paths.DISCOVER,
       page: () => const DiscoverView(),
       binding: DiscoverBinding(),
+      transition: Transition.fadeIn,
+      curve: Curves.fastOutSlowIn,
+      transitionDuration: const Duration(
+        milliseconds: 500,
+      ),
     ),
     GetPage(
       name: _Paths.DETAILS,
       page: () => const DetailsView(),
       binding: DetailsBinding(),
+      transition: Transition.fadeIn,
+      curve: Curves.fastOutSlowIn,
+      transitionDuration: const Duration(
+        milliseconds: 500,
+      ),
     ),
   ];
 }
