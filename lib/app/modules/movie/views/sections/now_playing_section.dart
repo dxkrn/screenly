@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:screenly/app/components/section_title.dart';
 import 'package:screenly/app/modules/movie/controllers/movie_controller.dart';
 import 'package:screenly/app/routes/app_pages.dart';
 import 'package:screenly/config/text_config.dart';
@@ -21,11 +22,16 @@ class NowPlayingSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 16,
       children: [
-        Padding(
+        SectionTitle(
+          title: 'Now Playing',
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Text(
-            'Now Playing',
-            style: heading4TextStyle.copyWith(color: whiteColor),
+          ontap: () => Get.toNamed(
+            Routes.DISCOVER,
+            arguments: {
+              'title': 'Now Playing Movies',
+              'subtitle': 'Explore movies currently playing in theatres',
+              'categoryType': 'movie_now_playing',
+            },
           ),
         ),
         Obx(() {

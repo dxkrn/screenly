@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:screenly/app/components/section_title.dart';
 import 'package:screenly/app/modules/movie/controllers/movie_controller.dart';
 import 'package:screenly/app/routes/app_pages.dart';
 import 'package:screenly/config/text_config.dart';
@@ -20,11 +21,15 @@ class TopRatedSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 16,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'Top Rated Movies',
-            style: heading4TextStyle.copyWith(color: whiteColor),
+        SectionTitle(
+          title: 'Top Rated Movies',
+          ontap: () => Get.toNamed(
+            Routes.DISCOVER,
+            arguments: {
+              'title': 'Top Rated Movies',
+              'subtitle': 'Explore the all-time highest rated movies',
+              'categoryType': 'movie_top_rated',
+            },
           ),
         ),
         Obx(() {

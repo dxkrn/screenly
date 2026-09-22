@@ -8,17 +8,19 @@ class SectionTitle extends StatelessWidget {
       required this.title,
       this.actionLabel,
       this.showAction = true,
-      this.ontap});
+      this.ontap,
+      this.padding});
 
   final String title;
   final String? actionLabel;
   final bool showAction;
   final void Function()? ontap;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: padding ?? const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

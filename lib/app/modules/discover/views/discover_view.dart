@@ -130,8 +130,18 @@ class _DiscoverViewState extends State<DiscoverView> {
               Obx(
                 () => Text(
                   controller.titleText.value,
-                  style: heading5TextStyle.copyWith(color: whiteColor),
+                  style: heading4TextStyle.copyWith(color: whiteColor),
                   maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Obx(
+                () => Text(
+                  controller.subtitleText.value,
+                  style: paragraphSmallTextStyle.copyWith(
+                    color: Colors.white70,
+                  ),
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),

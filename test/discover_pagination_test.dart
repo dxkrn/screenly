@@ -232,7 +232,6 @@ void main() {
         ),
       );
       await tester.pump();
-
       expect(find.text('Discover'), findsOneWidget);
       expect(find.text('Find and explore your favorite movies and TV shows'),
           findsOneWidget);
@@ -267,17 +266,6 @@ void main() {
     testWidgets(
         'UpcomingSection See All button triggers navigation with category arguments',
         (tester) async {
-      final mockClient = MockClient((request) async {
-        return http.Response(
-          json.encode({
-            'page': 1,
-            'total_pages': 1,
-            'results': [],
-          }),
-          200,
-        );
-      });
-
       // Register MovieController with mock service if needed
       final movieController = Get.put(MovieController());
       movieController.isLoadingUpcoming.value = false;
