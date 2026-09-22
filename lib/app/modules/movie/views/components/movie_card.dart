@@ -54,42 +54,55 @@ class MovieCard extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 child: Stack(
                   children: [
-                    posterUrl != null && posterUrl!.isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl: posterUrl!,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              color: const Color(0xFF1E1E1E),
-                              child: Center(
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: primaryColor,
+                    Positioned.fill(
+                      child: posterUrl != null && posterUrl!.isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: posterUrl!,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                              placeholder: (context, url) => Container(
+                                color: const Color(0xFF1E1E1E),
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: primaryColor,
+                                  ),
                                 ),
                               ),
-                            ),
-                            errorWidget: (context, url, error) => Container(
-                              color: const Color(0xFF1E1E1E),
-                              child: const Icon(
-                                Icons.movie_outlined,
-                                color: Colors.white38,
-                                size: 40,
+                              errorWidget: (context, url, error) => Container(
+                                color: const Color(0xFF1E1E1E),
+                                child: const Icon(
+                                  Icons.movie_outlined,
+                                  color: Colors.white38,
+                                  size: 40,
+                                ),
                               ),
-                            ),
-                          )
-                        : SizedBox.shrink(),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
                     if (showTypeBadge)
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        decoration: BoxDecoration(
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
                             color: primaryColor,
-                            borderRadius: BorderRadius.only(
-                                bottomRight: Radius.circular(16))),
-                        child: Text(
-                          'Movie',
-                          style: paragraphSmallTextStyle,
+                            borderRadius: const BorderRadius.only(
+                              bottomRight: Radius.circular(16),
+                            ),
+                          ),
+                          child: Text(
+                            'Movie',
+                            style: paragraphSmallTextStyle.copyWith(
+                              color: blackColor,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
-                      )
+                      ),
                   ],
                 )),
             Text(
