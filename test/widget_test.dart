@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:screenly/app/data/models/search_multi_model.dart';
 import 'package:screenly/app/data/models/tvshow_airing_today_model.dart';
 import 'package:screenly/app/data/models/tvshow_on_the_air_model.dart';
+import 'package:screenly/app/data/models/tvshow_popular_model.dart';
+import 'package:screenly/app/data/models/tvshow_top_rated_model.dart';
 import 'package:screenly/app/modules/discover/controllers/discover_controller.dart';
 import 'package:screenly/app/modules/discover/views/discover_view.dart';
 import 'package:screenly/app/modules/movie/views/components/movie_card.dart';
@@ -209,5 +211,59 @@ void main() {
         'https://image.tmdb.org/t/p/w500/aoAZgnmMzY9vVy9VWnO3U5PZENh.jpg');
     expect(tvShow.fullBackdropUrl,
         'https://image.tmdb.org/t/p/w780/mAJ84W6I8I272Da87qplS2Dp9ST.jpg');
+  });
+
+  test('TvShowPopularModel parses json and computes getters correctly', () {
+    final json = {
+      'id': 203504,
+      'name': 'Aashiqana',
+      'original_name': 'आशिकाना',
+      'first_air_date': '2022-06-06',
+      'poster_path': '/a4Z6Uohb6Ln5vcPvMUzwyn3WBjP.jpg',
+      'backdrop_path': '/wJmcuxa0C4AERmA9mejxm9qRYDj.jpg',
+      'vote_average': 6.1,
+      'vote_count': 10,
+      'overview': 'A serial killer sparks the story...',
+      'popularity': 2732.908,
+    };
+
+    final tvShow = TvShowPopularModel.fromJson(json);
+
+    expect(tvShow.id, 203504);
+    expect(tvShow.name, 'Aashiqana');
+    expect(tvShow.title, 'Aashiqana');
+    expect(tvShow.releaseYear, '2022');
+    expect(tvShow.formattedRating, '6.1');
+    expect(tvShow.fullPosterUrl,
+        'https://image.tmdb.org/t/p/w500/a4Z6Uohb6Ln5vcPvMUzwyn3WBjP.jpg');
+    expect(tvShow.fullBackdropUrl,
+        'https://image.tmdb.org/t/p/w780/wJmcuxa0C4AERmA9mejxm9qRYDj.jpg');
+  });
+
+  test('TvShowTopRatedModel parses json and computes getters correctly', () {
+    final json = {
+      'id': 1396,
+      'name': 'Breaking Bad',
+      'original_name': 'Breaking Bad',
+      'first_air_date': '2008-01-20',
+      'poster_path': '/ggFHVNu6YYI5L9pCfOacjizRGt.jpg',
+      'backdrop_path': '/bsNm9z2TJfe0WO3RedPGWQ8mG1X.jpg',
+      'vote_average': 8.9,
+      'vote_count': 11543,
+      'overview': 'When Walter White, a New Mexico chemistry teacher...',
+      'popularity': 292.904,
+    };
+
+    final tvShow = TvShowTopRatedModel.fromJson(json);
+
+    expect(tvShow.id, 1396);
+    expect(tvShow.name, 'Breaking Bad');
+    expect(tvShow.title, 'Breaking Bad');
+    expect(tvShow.releaseYear, '2008');
+    expect(tvShow.formattedRating, '8.9');
+    expect(tvShow.fullPosterUrl,
+        'https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg');
+    expect(tvShow.fullBackdropUrl,
+        'https://image.tmdb.org/t/p/w780/bsNm9z2TJfe0WO3RedPGWQ8mG1X.jpg');
   });
 }

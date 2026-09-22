@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import '../controllers/tvshow_controller.dart';
 import 'sections/airing_today_section.dart';
 import 'sections/on_the_air_section.dart';
+import 'sections/popular_section.dart';
+import 'sections/top_rated_section.dart';
 
 class TvshowView extends GetView<TvshowController> {
   const TvshowView({super.key});
@@ -19,6 +21,8 @@ class TvshowView extends GetView<TvshowController> {
           children: [
             OnTheAirSection(),
             AiringTodaySection(),
+            PopularSection(),
+            TopRatedSection()
           ],
         ),
       )),
