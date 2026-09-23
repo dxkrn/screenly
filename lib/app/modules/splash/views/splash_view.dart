@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:screenly/config/theme_config.dart';
-
 import '../controllers/splash_controller.dart';
 
 class SplashView extends GetView<SplashController> {
@@ -10,10 +8,6 @@ class SplashView extends GetView<SplashController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('SplashView'),
-        centerTitle: true,
-      ),
       body: Center(
         child: Container(
           color: primaryColor,

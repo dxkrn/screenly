@@ -2,22 +2,24 @@ import 'package:get/get.dart';
 import 'package:screenly/app/data/models/search_multi_model.dart';
 import 'package:screenly/app/data/services/tmdb_movie_service.dart';
 import 'package:screenly/app/data/services/tmdb_tvshow_service.dart';
+import 'package:screenly/app/data/services/tmdb_watchlist_service.dart';
 import 'package:screenly/app/modules/home/controllers/home_controller.dart';
+import 'package:screenly/app/modules/profile/controllers/profile_controller.dart';
 import 'package:screenly/utils/preferences_utils.dart';
 
 class WatchlistController extends GetxController {
-  final TmdbService _movieService;
-  final TmdbTvShowService _tvShowService;
+  final TmdbWatchlistService _watchlistService;
   final bool autoLoad;
 
   WatchlistController({
     TmdbService? movieService,
     TmdbTvShowService? tvShowService,
+    TmdbWatchlistService? watchlistService,
     this.autoLoad = true,
-  })  : _movieService = movieService ?? TmdbService(),
-        _tvShowService = tvShowService ?? TmdbTvShowService();
+  }) : _watchlistService = watchlistService ?? TmdbWatchlistService();
 
   final isLoading = true.obs;
+  final isTmdbConnected = false.obs;
   final watchlistItems = <SearchResultModel>[].obs;
   final selectedFilter = 'all'.obs; // 'all', 'movie', 'tv'
 
@@ -50,58 +52,53 @@ class WatchlistController extends GetxController {
         }
       });
     }
+    if (Get.isRegistered<ProfileController>()) {
+      ever(Get.find<ProfileController>().isLoggedIn, (_) {
+        loadBookmarks();
+      });
+    }
   }
 
   Future<void> loadBookmarks() async {
     try {
       isLoading.value = true;
-      final rawItems = await PreferencesUtils.getBookmarkItems();
-      final List<SearchResultModel> loaded = [];
+      final loggedIn = await PreferencesUtils.isTmdbLoggedIn();
+      isTmdbConnected.value = loggedIn;
 
-      for (final raw in rawItems) {
-        final id = raw['id'] as int? ?? 0;
-        if (id <= 0) continue;
-
-        if (raw['title'] != null || raw['name'] != null) {
-          loaded.add(SearchResultModel.fromJson(raw));
-        } else {
-          try {
-            final movie = await _movieService.getMovieDetail(id);
-            final itemMap = {
-              'id': movie.id,
-              'title': movie.title,
-              'poster_path': movie.posterPath,
-              'backdrop_path': movie.backdropPath,
-              'vote_average': movie.voteAverage,
-              'vote_count': movie.voteCount,
-              'media_type': 'movie',
-              'release_date': movie.releaseDate,
-            };
-            await PreferencesUtils.addBookmark(id, itemMap);
-            loaded.add(SearchResultModel.fromJson(itemMap));
-          } catch (_) {
-            try {
-              final tv = await _tvShowService.getTvShowDetail(id);
-              final itemMap = {
-                'id': tv.id,
-                'title': tv.title,
-                'poster_path': tv.posterPath,
-                'backdrop_path': tv.backdropPath,
-                'vote_average': tv.voteAverage,
-                'vote_count': tv.voteCount,
-                'media_type': 'tv',
-                'release_date': tv.releaseDate,
-              };
-              await PreferencesUtils.addBookmark(id, itemMap);
-              loaded.add(SearchResultModel.fromJson(itemMap));
-            } catch (_) {
-              loaded.add(SearchResultModel(id: id, title: 'Item #$id'));
-            }
-          }
-        }
+      if (!loggedIn) {
+        watchlistItems.clear();
+        return;
       }
 
-      watchlistItems.assignAll(loaded);
+      final accountId = await PreferencesUtils.getTmdbAccountId();
+      final sessionId = await PreferencesUtils.getTmdbSessionId();
+
+      if (accountId == null || sessionId == null) {
+        watchlistItems.clear();
+        return;
+      }
+
+      final results = await Future.wait([
+        _watchlistService.getWatchlistMovies(
+          accountId: accountId,
+          sessionId: sessionId,
+          page: 1,
+        ),
+        _watchlistService.getWatchlistTvShows(
+          accountId: accountId,
+          sessionId: sessionId,
+          page: 1,
+        ),
+      ]);
+
+      final movieResponse = results[0];
+      final tvResponse = results[1];
+
+      final List<SearchResultModel> combined = [];
+      combined.addAll(movieResponse.results);
+      combined.addAll(tvResponse.results);
+
+      watchlistItems.assignAll(combined);
     } catch (_) {
       // Keep existing list on error
     } finally {
@@ -109,8 +106,27 @@ class WatchlistController extends GetxController {
     }
   }
 
-  Future<void> removeBookmark(int id) async {
-    await PreferencesUtils.removeBookmark(id);
+  Future<void> removeBookmark(int id, {String? mediaType}) async {
+    final loggedIn = await PreferencesUtils.isTmdbLoggedIn();
+    if (loggedIn) {
+      final accountId = await PreferencesUtils.getTmdbAccountId();
+      final sessionId = await PreferencesUtils.getTmdbSessionId();
+      if (accountId != null && sessionId != null) {
+        try {
+          final target =
+              watchlistItems.firstWhereOrNull((item) => item.id == id);
+          final type = mediaType ?? (target?.isTv == true ? 'tv' : 'movie');
+          await _watchlistService.updateWatchlist(
+            accountId: accountId,
+            sessionId: sessionId,
+            mediaType: type,
+            mediaId: id,
+            watchlist: false,
+          );
+        } catch (_) {}
+      }
+    }
+
     watchlistItems.removeWhere((item) => item.id == id);
   }
 }

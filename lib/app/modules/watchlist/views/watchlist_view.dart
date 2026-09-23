@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:screenly/app/data/models/search_multi_model.dart';
 import 'package:screenly/app/modules/home/controllers/home_controller.dart';
 import 'package:screenly/app/modules/movie/views/components/movie_card.dart';
-import 'package:screenly/app/modules/profile/controllers/profile_controller.dart';
 import 'package:screenly/app/modules/tvshow/views/components/tvshow_card.dart';
 import 'package:screenly/app/routes/app_pages.dart';
 import 'package:screenly/config/text_config.dart';
@@ -82,61 +81,6 @@ class WatchlistView extends GetView<WatchlistController> {
               'Watchlist',
               style: heading4TextStyle.copyWith(color: whiteColor),
             ),
-            if (Get.isRegistered<ProfileController>())
-              Obx(() {
-                final profileCtrl = Get.find<ProfileController>();
-                final isLoggedIn = profileCtrl.isLoggedIn.value;
-                final username = profileCtrl.currentUser.value?.username;
-
-                return GestureDetector(
-                  onTap: () {
-                    if (Get.isRegistered<HomeController>()) {
-                      Get.find<HomeController>().changeTabIndex(3);
-                    }
-                  },
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: isLoggedIn
-                          ? Colors.green.withValues(alpha: 0.15)
-                          : primaryColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isLoggedIn
-                            ? Colors.green.withValues(alpha: 0.3)
-                            : primaryColor.withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          isLoggedIn
-                              ? Icons.cloud_done_rounded
-                              : Icons.cloud_queue_rounded,
-                          size: 14,
-                          color: isLoggedIn ? Colors.greenAccent : primaryColor,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          isLoggedIn
-                              ? (username != null
-                                  ? '@$username'
-                                  : 'TMDB Connected')
-                              : 'Connect TMDB',
-                          style: paragraphSmallTextStyle.copyWith(
-                            color:
-                                isLoggedIn ? Colors.greenAccent : primaryColor,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
           ],
         ),
         Text(
@@ -346,6 +290,41 @@ class WatchlistView extends GetView<WatchlistController> {
                         height: 1.5,
                       ),
                     ),
+                    Obx(() {
+                      if (!controller.isTmdbConnected.value) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 24),
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: primaryColor,
+                              foregroundColor: Colors.black,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                            onPressed: () {
+                              if (Get.isRegistered<HomeController>()) {
+                                Get.find<HomeController>().changeTabIndex(3);
+                              }
+                            },
+                            icon:
+                                const Icon(Icons.cloud_sync_rounded, size: 18),
+                            label: Text(
+                              'Connect TMDB Account',
+                              style: heading6TextStyle.copyWith(
+                                color: Colors.black,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }),
                   ],
                 ),
               ),

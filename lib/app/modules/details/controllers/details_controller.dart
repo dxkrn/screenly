@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:screenly/app/components/login_required_dialog.dart';
 import 'package:screenly/app/data/models/media_detail_model.dart';
 import 'package:screenly/app/data/services/tmdb_movie_service.dart';
 import 'package:screenly/app/data/services/tmdb_tvshow_service.dart';
+import 'package:screenly/app/data/services/tmdb_watchlist_service.dart';
 import 'package:screenly/utils/preferences_utils.dart';
 
 class DetailsController extends GetxController {
   final TmdbService _movieService;
   final TmdbTvShowService _tvShowService;
+  final TmdbWatchlistService _watchlistService;
   final bool autoFetch;
 
   DetailsController({
     TmdbService? movieService,
     TmdbTvShowService? tvShowService,
+    TmdbWatchlistService? watchlistService,
     this.autoFetch = true,
   })  : _movieService = movieService ?? TmdbService(),
-        _tvShowService = tvShowService ?? TmdbTvShowService();
+        _tvShowService = tvShowService ?? TmdbTvShowService(),
+        _watchlistService = watchlistService ?? TmdbWatchlistService();
 
   final isLoading = true.obs;
   final errorMessage = ''.obs;
@@ -52,55 +57,54 @@ class DetailsController extends GetxController {
   Future<void> checkBookmarkStatus() async {
     final id = mediaId.value > 0 ? mediaId.value : (detail.value?.id ?? 0);
     if (id <= 0) return;
-    try {
-      final bookmarked = await PreferencesUtils.isBookmarked(id);
-      isBookmarked.value = bookmarked;
-    } catch (_) {}
+
+    final isLoggedIn = await PreferencesUtils.isTmdbLoggedIn();
+    if (!isLoggedIn) {
+      isBookmarked.value = false;
+      return;
+    }
+
+    final sessionId = await PreferencesUtils.getTmdbSessionId();
+    if (sessionId != null) {
+      final inWatchlist = await _watchlistService.isItemInWatchlist(
+        mediaId: id,
+        mediaType: mediaType.value,
+        sessionId: sessionId,
+      );
+      isBookmarked.value = inWatchlist;
+    }
   }
 
   Future<void> toggleBookmark() async {
     final id = mediaId.value > 0 ? mediaId.value : (detail.value?.id ?? 0);
     if (id <= 0) return;
 
+    final isLoggedIn = await PreferencesUtils.isTmdbLoggedIn();
+    if (!isLoggedIn) {
+      LoginRequiredDialog.show();
+      return;
+    }
+
+    final accountId = await PreferencesUtils.getTmdbAccountId();
+    final sessionId = await PreferencesUtils.getTmdbSessionId();
+    if (accountId == null || sessionId == null) return;
+
     try {
-      final currentDetail = detail.value;
-      Map<String, dynamic>? itemData;
-      if (currentDetail != null) {
-        itemData = {
-          'id': currentDetail.id,
-          'title': currentDetail.title,
-          'poster_path': currentDetail.posterPath,
-          'backdrop_path': currentDetail.backdropPath,
-          'vote_average': currentDetail.voteAverage,
-          'media_type': mediaType.value,
-          'release_date': currentDetail.releaseDate,
-        };
-      }
+      final nextStatus = !isBookmarked.value;
+      final type = mediaType.value.isNotEmpty ? mediaType.value : 'movie';
+      await _watchlistService.updateWatchlist(
+        accountId: accountId,
+        sessionId: sessionId,
+        mediaType: type,
+        mediaId: id,
+        watchlist: nextStatus,
+      );
 
-      final nowBookmarked = await PreferencesUtils.toggleBookmark(id, itemData);
-      isBookmarked.value = nowBookmarked;
-
-      // Get.snackbar(
-      //   nowBookmarked ? 'Added to Watchlist' : 'Removed from Watchlist',
-      //   currentDetail?.title ??
-      //       (nowBookmarked ? 'Saved to bookmarks' : 'Removed from bookmarks'),
-      //   snackPosition: SnackPosition.BOTTOM,
-      //   backgroundColor: const Color(0xFF1E1E1E),
-      //   colorText: Colors.white,
-      //   margin: const EdgeInsets.all(16),
-      //   borderRadius: 12,
-      //   duration: const Duration(seconds: 2),
-      //   icon: Icon(
-      //     nowBookmarked
-      //         ? Icons.bookmark_rounded
-      //         : Icons.bookmark_outline_rounded,
-      //     color: primaryColor,
-      //   ),
-      // );
+      isBookmarked.value = nextStatus;
     } catch (e) {
       Get.snackbar(
         'Error',
-        'Failed to update bookmark: $e',
+        'Failed to update watchlist: $e',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade900,
         colorText: Colors.white,
