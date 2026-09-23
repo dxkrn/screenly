@@ -1,57 +1,93 @@
-# Dxkrn App starter
+# Screenly 🎬
 
-Flutter Version: 3.38.3
+Screenly adalah aplikasi mobile katalog film dan serial TV modern berbasis Flutter yang terintegrasi langsung dengan **The Movie Database (TMDB) API**. Aplikasi ini memungkinkan pengguna menjelajahi film dan serial TV populer/trending, melakukan pencarian dengan *infinite scroll pagination*, melihat detail lengkap, serta mengelola daftar tontonan (*Watchlist*) yang tersinkronisasi langsung dengan akun TMDB.
 
-Follow this:
+---
 
-## 📦 Change package name
-- flutter pub run change_app_package_name:main com.new.package.name
+## 🛠 Tech Stack
 
-## 📱 Change app name
-- dart run rename_app:main all="My App Name"
+- **Framework**: [Flutter](https://flutter.dev/) (Dart SDK `>=3.5.3 <=4.0.0`)
+- **State Management & Routing**: [GetX](https://pub.dev/packages/get)
+- **API & Networking**: [HTTP](https://pub.dev/packages/http) terintegrasi ke TMDB API v3
+- **Local Storage**: [Hive](https://pub.dev/packages/hive) & [Path Provider](https://pub.dev/packages/path_provider)
+- **UI & Animation**:
+  - `cached_network_image` (Image caching & placeholder)
+  - `flutter_carousel_widget` (Carousel banner)
+  - `google_nav_bar` (Bottom navigation bar modern)
+- **Deep Linking**: `app_links`
 
-## 🚀 Change launcher icon
-- flutter pub run flutter_launcher_icons
+---
 
-## 🎨 Change theme or add more theme
-- Go to lib/config/theme_config.dart
-- Change / add colors on ThemeConfig class
-- Change / add name of theme on AppTheme enum
-- Use "ThemeConfig.switchTheme(AppTheme.<?>);" on spesified button
+## 📋 Prasyarat Sistem
 
-## 🇮🇩 Use Multi-language
-- Add dictionary on assets/translations/<?>.json
-- If without any args, use this:
-  const Text('greeting').tr()
-- If using positional args, use this:
-  const Text('name').tr(
-    args: ['Dicky', 'Magelang'],
-  ),
-- If using named args, use this:
-  const Text('film').tr(
-    namedArgs: {
-        'title': 'Spiderman', 
-        'genre': 'Sci-fi'
-    }
-  ),
-- Use 3 lines bellow on spesified language button:
-  const locale = Locale('id'); //change with defined Locale
-  context.setLocale(locale);
-  Get.updateLocale(locale);
+Sebelum memulai, pastikan perangkat Anda telah terpasang:
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (versi 3.5.3 atau lebih baru)
+- [Dart SDK](https://dart.dev/get-dart)
+- Editor kode seperti VS Code atau Android Studio
+- Emulator Android / iOS Simulator atau perangkat fisik aktif
 
-## 📝 Change / Add Local Fonts
-- Add .ttf or .otf fonts in assets/fonts/
-- Update fonts family declaration on pubspec.yaml
-- Update text style on lib/config/text_config.dart
+---
 
-## ⏳ Skeleton Loading
-- https://pub.dev/packages/skeletonizer
+## 🚀 Cara Instalasi
 
-## ☘️ Flavor
-- 1. Wrap "GetMaterialApp" or "MaterialApp" with "FlavorBanner" widget
-- 2. Create FlavorConfig in lib/ (e.g. main_dev.dart, main_prod.dart, main_staging.dart)
-- 3. You can add another env variables in each FlavorConfig (inside "variables" props)
-- 4. [Optional] Create method to get you env variable in lib/config/flavor_variables.dart
-- 5. Call your variable anywhere using FlavorValues (e.g. FlavorValues.env) or directly call FlavorConfig (e.g. FlavorConfig.instance.variables["env"])
-- 6. Run your app with an env you want using this command "flutter run -t lib/main_dev.dart"
-- 7. Build your app using this command "flutter build apk -t lib/main_dev.dart"
+### Opsi 1: Build dari Source Code (Development)
+
+1. **Clone Repository**
+   ```bash
+   git clone <URL_REPOSITORY>
+   cd screenly
+   ```
+
+2. **Install Dependensi**
+   Jalankan perintah berikut untuk mengunduh semua package yang diperlukan:
+   ```bash
+   flutter pub get
+   ```
+
+### Opsi 2: Instalasi Langsung via `screenly.apk`
+
+Jika ingin langsung mencoba aplikasi di perangkat Android tanpa perlu *setup environment* Flutter atau melakukan *build*:
+
+File APK siap pakai sudah tersedia di root proyek: `screenly.apk`.
+
+1. **Melalui File Manager (Perangkat Android)**:
+   - Salin / pindahkan file `screenly.apk` ke memori perangkat Android Anda.
+   - Buka aplikasi **File Manager**, lalu ketuk file `screenly.apk`.
+   - Izinkan opsi **"Install from unknown sources"** (*Instal aplikasi dari sumber tidak dikenal*) jika diminta oleh sistem.
+   - Pilih **Install** dan buka Screenly setelah proses selesai.
+
+2. **Melalui Komputer (Menggunakan ADB)**:
+   - Hubungkan HP Android ke komputer menggunakan kabel data dengan mode **USB Debugging** aktif.
+   - Buka terminal di direktori proyek dan jalankan perintah:
+     ```bash
+     adb install screenly.apk
+     ```
+     *(Gunakan `adb install -r screenly.apk` jika sebelumnya aplikasi sudah pernah terpasang)*.
+
+---
+
+## ▶️ Cara Menjalankan Program
+
+Pastikan emulator atau perangkat fisik Anda telah terhubung:
+
+1. **Menjalankan Mode Standar**
+   ```bash
+   flutter run
+   ```
+
+2. **Menjalankan Berdasarkan Flavor / Environment (Opsional)**
+   ```bash
+   # Development Flavor
+   flutter run -t lib/main_dev.dart
+
+   # Staging Flavor
+   flutter run -t lib/main_staging.dart
+
+   # Production Flavor
+   flutter run -t lib/main_prod.dart
+   ```
+
+3. **Menjalankan Pengujian (Testing)**
+   ```bash
+   flutter test
+   ```
